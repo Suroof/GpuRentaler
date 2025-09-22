@@ -12,6 +12,21 @@
     <div class="logo">Admin3后台管理系统</div>
     <div class="header-right">
       <div class="header-user-con">
+        <!-- 主题切换按钮 -->
+        <div class="theme-toggle" @click="toggleTheme">
+          <el-tooltip
+            effect="dark"
+            :content="themeStore.isDark ? '切换到明亮主题' : '切换到暗黑主题'"
+            placement="bottom"
+          >
+            <el-icon v-if="themeStore.isDark">
+              <Sunny />
+            </el-icon>
+            <el-icon v-else>
+              <Moon />
+            </el-icon>
+          </el-tooltip>
+        </div>
         <!-- 消息中心 -->
         <div class="btn-bell" @click="router.push('/tabs')">
           <el-tooltip
@@ -50,6 +65,7 @@
 <script setup lang="ts">
 import {onMounted} from 'vue';
 import {useSidebarStore} from '../store/sidebar';
+import {useThemeStore} from '../store/theme';
 import {useRouter} from 'vue-router';
 import {logout} from "../api/login";
 import {useBasicStore} from "../store/basic";
@@ -61,9 +77,16 @@ const avatar: string | null = userinfo.avatar;
 const message: number = 2;
 
 const sidebar = useSidebarStore();
+const themeStore = useThemeStore();
+
 // 侧边栏折叠
 const collapseChage = () => {
   sidebar.handleCollapse();
+};
+
+// 主题切换
+const toggleTheme = () => {
+  themeStore.toggleTheme();
 };
 
 onMounted(() => {
@@ -92,7 +115,11 @@ const handleCommand = (command: string) => {
   width: 100%;
   height: 70px;
   font-size: 22px;
-  color: #fff;
+  color: var(--text-primary);
+  background: var(--gradient-card);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-light);
 }
 
 .collapse-btn {
@@ -103,12 +130,23 @@ const handleCommand = (command: string) => {
   float: left;
   padding: 0 21px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin: 10px;
+}
+
+.collapse-btn:hover {
+  background: var(--bg-hover);
+  transform: scale(1.05);
 }
 
 .header .logo {
   float: left;
   width: 250px;
   line-height: 70px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-right {
@@ -120,39 +158,59 @@ const handleCommand = (command: string) => {
   display: flex;
   height: 70px;
   align-items: center;
+  gap: 15px;
 }
 
-.btn-fullscreen {
-  transform: rotate(45deg);
-  margin-right: 5px;
-  font-size: 24px;
-}
-
+.theme-toggle,
 .btn-bell,
 .btn-fullscreen {
   position: relative;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   text-align: center;
-  border-radius: 15px;
+  border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-primary);
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.theme-toggle:hover,
+.btn-bell:hover,
+.btn-fullscreen:hover {
+  background: var(--bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-light);
+  border-color: var(--border-hover);
+}
+
+.theme-toggle {
+  font-size: 18px;
+}
+
+.theme-toggle:hover {
+  color: var(--accent-warning);
 }
 
 .btn-bell-badge {
   position: absolute;
   right: 4px;
-  top: 0px;
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background: #f56c6c;
-  color: #fff;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #ff4757, #ff3838);
+  border: 2px solid var(--bg-primary);
 }
 
 .btn-bell .el-icon-lx-notice {
-  color: #fff;
+  color: var(--text-primary);
+  font-size: 18px;
 }
 
 .user-name {
@@ -161,16 +219,44 @@ const handleCommand = (command: string) => {
 
 .user-avator {
   margin-left: 20px;
+  border: 2px solid var(--border-primary);
+  transition: all 0.3s ease;
+}
+
+.user-avator:hover {
+  border-color: var(--border-hover);
+  transform: scale(1.05);
 }
 
 .el-dropdown-link {
-  color: #fff;
+  color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-primary);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.el-dropdown-link:hover {
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+  border-color: var(--border-hover);
 }
 
 .el-dropdown-menu__item {
   text-align: center;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+.el-dropdown-menu__item:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
 }
 </style>

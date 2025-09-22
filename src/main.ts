@@ -5,11 +5,18 @@ import App from './App.vue';
 import router from './router';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
+import './assets/css/theme.css';
+import './assets/css/main.css';
 import {useBasicStore} from "./store/basic";
+import {useThemeStore} from "./store/theme";
 
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
+
+// 初始化主题
+const themeStore = useThemeStore();
+themeStore.initTheme();
 
 // 注册element plus图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

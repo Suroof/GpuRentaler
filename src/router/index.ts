@@ -100,20 +100,20 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
-  document.title = `${to.meta.title} | Admin3后台管理系统`;
-  const token = localStorage.getItem('token');
-  const basicStore = useBasicStore();
-  if (!token && to.path !== '/login') {
-    next('/login');
-  } /*else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
-        // 如果没有权限，则进入403
-        next('/403');
-    }*/ else {
-    if (token) {
-      await basicStore.fetchUserinfo();
-    }
-    next();
-  }
-});
+// router.beforeEach(async (to, from, next) => {
+//   document.title = `${to.meta.title} | Admin3后台管理系统`;
+//   const token = localStorage.getItem('token');
+//   const basicStore = useBasicStore();
+//   if (!token && to.path !== '/login') {
+//     next('/login');
+//   } /*else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
+//         // 如果没有权限，则进入403
+//         next('/403');
+//     }*/ else {
+//     if (token) {
+//       await basicStore.fetchUserinfo();
+//     }
+//     next();
+//   }
+// });
 export default router;

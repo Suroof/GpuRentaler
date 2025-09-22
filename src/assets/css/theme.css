@@ -1,0 +1,105 @@
+/* 主题变量定义 */
+:root {
+  /* 明亮主题 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-hover: #f5f5f5;
+
+  --text-primary: #2c3e50;
+  --text-secondary: #7c8db5;
+  --text-tertiary: #a0a8b8;
+  --text-inverse: #ffffff;
+
+  --border-primary: #e4e7ed;
+  --border-secondary: #ebeef5;
+  --border-hover: #c0c4cc;
+
+  --shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+
+  --accent-primary: #409eff;
+  --accent-success: #67c23a;
+  --accent-warning: #e6a23c;
+  --accent-danger: #f56c6c;
+  --accent-info: #909399;
+
+  --gradient-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* 暗黑主题 */
+.dark-theme {
+  --bg-primary: #000000;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2d2d2d;
+  --bg-card: rgba(30, 30, 30, 0.95);
+  --bg-hover: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-tertiary: #999999;
+  --text-inverse: #000000;
+
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+  --border-hover: rgba(255, 255, 255, 0.2);
+
+  --shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
+  --shadow-heavy: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+
+  --accent-primary: #409eff;
+  --accent-success: #67c23a;
+  --accent-warning: #e6a23c;
+  --accent-danger: #f56c6c;
+  --accent-info: #909399;
+
+  --gradient-bg: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%, #0f0f0f 100%);
+  --gradient-card: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(50, 50, 50, 0.95));
+}
+
+/* 明亮主题特定样式 */
+.light-theme {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-hover: #f5f5f5;
+
+  --text-primary: #2c3e50;
+  --text-secondary: #7c8db5;
+  --text-tertiary: #a0a8b8;
+  --text-inverse: #ffffff;
+
+  --border-primary: #e4e7ed;
+  --border-secondary: #ebeef5;
+  --border-hover: #c0c4cc;
+
+  --shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+
+  --gradient-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --gradient-card: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* 动画效果 */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 渐变背景动画 */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

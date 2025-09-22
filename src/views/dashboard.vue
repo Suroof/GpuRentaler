@@ -210,58 +210,82 @@ const todoList = reactive([
   display: flex;
   align-items: center;
   height: 100px;
+  background: var(--gradient-card);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 0 20px;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-primary);
+}
+
+.grid-content:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-heavy);
 }
 
 .grid-cont-right {
   flex: 1;
   text-align: center;
   font-size: 14px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .grid-num {
   font-size: 30px;
   font-weight: bold;
+  color: var(--text-primary);
 }
 
 .grid-con-icon {
   font-size: 50px;
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   text-align: center;
-  line-height: 100px;
+  line-height: 70px;
   color: #fff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-content:hover .grid-con-icon {
+  transform: scale(1.1);
 }
 
 .grid-con-1 .grid-con-icon {
-  background: rgb(45, 140, 240);
+  background: linear-gradient(135deg, #2d8cf0, #1976d2);
+  box-shadow: 0 8px 25px rgba(45, 140, 240, 0.4);
 }
 
 .grid-con-1 .grid-num {
-  color: rgb(45, 140, 240);
+  color: #2d8cf0;
 }
 
 .grid-con-2 .grid-con-icon {
-  background: rgb(100, 213, 114);
+  background: linear-gradient(135deg, #64d572, #4caf50);
+  box-shadow: 0 8px 25px rgba(100, 213, 114, 0.4);
 }
 
 .grid-con-2 .grid-num {
-  color: rgb(100, 213, 114);
+  color: #64d572;
 }
 
 .grid-con-3 .grid-con-icon {
-  background: rgb(242, 94, 67);
+  background: linear-gradient(135deg, #f25e43, #e91e63);
+  box-shadow: 0 8px 25px rgba(242, 94, 67, 0.4);
 }
 
 .grid-con-3 .grid-num {
-  color: rgb(242, 94, 67);
+  color: #f25e43;
 }
 
 .user-info {
   display: flex;
   align-items: center;
   padding-bottom: 20px;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px solid var(--border-primary);
   margin-bottom: 20px;
 }
 
@@ -269,22 +293,25 @@ const todoList = reactive([
   padding-left: 50px;
   flex: 1;
   font-size: 14px;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .user-info-cont div:first-child {
   font-size: 30px;
-  color: #222;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .user-info-list {
   font-size: 14px;
-  color: #999;
+  color: var(--text-secondary);
   line-height: 25px;
 }
 
 .user-info-list span {
   margin-left: 70px;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .mgb20 {
@@ -293,15 +320,78 @@ const todoList = reactive([
 
 .todo-item {
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .todo-item-del {
   text-decoration: line-through;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .schart {
   width: 100%;
   height: 300px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Element Plus Components Theme Overrides for Dashboard */
+:deep(.el-card) {
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-medium) !important;
+  transition: all 0.3s ease !important;
+}
+
+:deep(.el-card:hover) {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-heavy) !important;
+}
+
+:deep(.el-card__header) {
+  background: var(--bg-tertiary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+:deep(.el-card__body) {
+  color: var(--text-primary) !important;
+}
+
+:deep(.el-progress__text) {
+  color: var(--text-primary) !important;
+}
+
+:deep(.el-checkbox__label) {
+  color: var(--text-primary) !important;
+}
+
+:deep(.el-table) {
+  background: transparent !important;
+}
+
+:deep(.el-table__body tr) {
+  background: transparent !important;
+}
+
+:deep(.el-table__body tr:hover) {
+  background: var(--bg-hover) !important;
+}
+
+:deep(.el-table td) {
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+:deep(.el-button--text) {
+  color: var(--accent-primary) !important;
+}
+
+:deep(.el-button--text:hover) {
+  color: var(--accent-primary) !important;
+  background: var(--bg-hover) !important;
 }
 </style>
