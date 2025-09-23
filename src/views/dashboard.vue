@@ -36,45 +36,57 @@
         </el-card>
       </el-col>
       <el-col :span="16">
-        <el-row :gutter="20" class="mgb20">
+        <el-row :gutter="24" class="mgb20">
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-1">
-                <el-icon class="grid-con-icon">
+            <div class="stats-card stats-card-1">
+              <div class="stats-icon">
+                <el-icon>
                   <User/>
                 </el-icon>
-                <div class="grid-cont-right">
-                  <div class="grid-num">1234</div>
-                  <div>用户访问量</div>
+              </div>
+              <div class="stats-content">
+                <div class="stats-label">用户访问量</div>
+                <div class="stats-number">1,234</div>
+                <div class="stats-trend">
+                  <span class="trend-up">↗ +12%</span>
                 </div>
               </div>
-            </el-card>
+              <div class="stats-bg-pattern"></div>
+            </div>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-2">
-                <el-icon class="grid-con-icon">
+            <div class="stats-card stats-card-2">
+              <div class="stats-icon">
+                <el-icon>
                   <ChatDotRound/>
                 </el-icon>
-                <div class="grid-cont-right">
-                  <div class="grid-num">321</div>
-                  <div>系统消息</div>
+              </div>
+              <div class="stats-content">
+                <div class="stats-label">系统消息</div>
+                <div class="stats-number">321</div>
+                <div class="stats-trend">
+                  <span class="trend-up">↗ +8%</span>
                 </div>
               </div>
-            </el-card>
+              <div class="stats-bg-pattern"></div>
+            </div>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-3">
-                <el-icon class="grid-con-icon">
+            <div class="stats-card stats-card-3">
+              <div class="stats-icon">
+                <el-icon>
                   <Goods/>
                 </el-icon>
-                <div class="grid-cont-right">
-                  <div class="grid-num">5000</div>
-                  <div>商品数量</div>
+              </div>
+              <div class="stats-content">
+                <div class="stats-label">商品数量</div>
+                <div class="stats-number">5,000</div>
+                <div class="stats-trend">
+                  <span class="trend-down">↘ -3%</span>
                 </div>
               </div>
-            </el-card>
+              <div class="stats-bg-pattern"></div>
+            </div>
           </el-col>
         </el-row>
         <el-card shadow="hover" style="height: 403px">
@@ -362,6 +374,8 @@ const donutChartOption = computed(() => ({
       radius: ['40%', '70%'],
       center: ['35%', '50%'],
       avoidLabelOverlap: false,
+      selectedMode: 'single',
+      selectedOffset: 20,
       label: {
         show: false
       },
@@ -440,79 +454,137 @@ const todoList = reactive([
   margin-bottom: 20px;
 }
 
-.grid-content {
+/* 统计卡片样式 */
+.stats-card {
+  position: relative;
   display: flex;
   align-items: center;
-  height: 100px;
+  height: 120px;
   background: var(--gradient-card);
   backdrop-filter: blur(20px);
-  border-radius: 12px;
-  padding: 0 20px;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-primary);
+  border-bottom: 2px solid var(--border-primary);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.grid-content:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-heavy);
+.stats-card:hover {
+  transform: translateY(-8px);
+  border-bottom: 10px solid rgba(226, 226, 226, 0.8);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.grid-cont-right {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.grid-num {
-  font-size: 30px;
-  font-weight: bold;
-  color: var(--text-primary);
-}
-
-.grid-con-icon {
-  font-size: 50px;
-  width: 70px;
-  height: 70px;
-  text-align: center;
-  line-height: 70px;
-  color: #fff;
+.stats-icon {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 20px;
+  transition: all 0.3s ease;
 }
 
-.grid-content:hover .grid-con-icon {
-  transform: scale(1.1);
+.stats-icon .el-icon {
+  font-size: 32px;
+  color: #ffffff;
 }
 
-.grid-con-1 .grid-con-icon {
-  background: linear-gradient(135deg, #2d8cf0, #1976d2);
-  box-shadow: 0 8px 25px rgba(45, 140, 240, 0.4);
+.stats-content {
+  flex: 1;
+  z-index: 2;
 }
 
-.grid-con-1 .grid-num {
-  color: #2d8cf0;
+.stats-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
 
-.grid-con-2 .grid-con-icon {
-  background: linear-gradient(135deg, #64d572, #4caf50);
-  box-shadow: 0 8px 25px rgba(100, 213, 114, 0.4);
+.stats-number {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.grid-con-2 .grid-num {
-  color: #64d572;
+.stats-trend {
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.grid-con-3 .grid-con-icon {
-  background: linear-gradient(135deg, #f25e43, #e91e63);
-  box-shadow: 0 8px 25px rgba(242, 94, 67, 0.4);
+.trend-up {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
-.grid-con-3 .grid-num {
-  color: #f25e43;
+.trend-down {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.stats-bg-pattern {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+}
+
+.stats-card:hover .stats-bg-pattern {
+  transform: scale(1.1) rotate(10deg);
+  opacity: 0.15;
+}
+
+.stats-card:hover .stats-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+/* 卡片特定样式 */
+.stats-card-1 .stats-icon {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+}
+
+.stats-card-1 .stats-bg-pattern {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.stats-card-2 .stats-icon {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  box-shadow: 0 8px 32px rgba(240, 147, 251, 0.4);
+}
+
+.stats-card-2 .stats-bg-pattern {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.stats-card-3 .stats-icon {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  box-shadow: 0 8px 32px rgba(79, 172, 254, 0.4);
+}
+
+.stats-card-3 .stats-bg-pattern {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
 }
 
 .user-info {
