@@ -111,11 +111,11 @@
       <el-col :span="12">
         <el-card shadow="hover" class="chart-card">
           <div class="chart-header">
-            <h3>最近一周各品类销售图</h3>
+            <h3>趋势分析图</h3>
           </div>
           <v-chart
             class="chart"
-            :option="barChartOption"
+            :option="areaChartOption"
             :theme="currentTheme"
             autoresize
           />
@@ -124,11 +124,11 @@
       <el-col :span="12">
         <el-card shadow="hover" class="chart-card">
           <div class="chart-header">
-            <h3>最近几个月各品类销售趋势图</h3>
+            <h3>加载速度</h3>
           </div>
           <v-chart
             class="chart"
-            :option="lineChartOption"
+            :option="donutChartOption"
             :theme="currentTheme"
             autoresize
           />
@@ -147,7 +147,7 @@ import {
   LegendComponent,
   GridComponent
 } from 'echarts/components'
-import { BarChart, LineChart } from 'echarts/charts'
+import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { provide } from 'vue'
@@ -161,6 +161,7 @@ use([
   GridComponent,
   BarChart,
   LineChart,
+  PieChart,
   CanvasRenderer
 ])
 
@@ -195,20 +196,14 @@ const currentTheme = computed(() => isDarkMode.value ? 'dark' : 'light')
 // 提供主题给ECharts
 provide(THEME_KEY, currentTheme)
 
-// 柱状图配置
-const barChartOption = computed(() => ({
+// 面积图配置 (左侧图表)
+const areaChartOption = computed(() => ({
   backgroundColor: 'transparent',
   title: {
     show: false
   },
   tooltip: {
     trigger: 'axis',
-    axisPointer: {
-      type: 'shadow',
-      shadowStyle: {
-        color: isDarkMode.value ? 'rgba(167, 139, 250, 0.1)' : 'rgba(196, 181, 253, 0.1)'
-      }
-    },
     backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
     borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
     borderWidth: 1,
@@ -220,32 +215,37 @@ const barChartOption = computed(() => ({
     extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
   },
   legend: {
-    data: ['家电', '百货', '食品', '服装'],
-    top: '5%',
+    data: ['Debit', 'Credit'],
+    bottom: '10%',
+    left: 'center',
+    itemGap: 20,
     textStyle: {
-      color: isDarkMode.value ? '#cbd5e1' : '#475569'
-    }
+      color: isDarkMode.value ? '#cbd5e1' : '#64748b',
+      fontSize: 12
+    },
+    itemWidth: 12,
+    itemHeight: 12
   },
   grid: {
-    left: '8%',
-    right: '8%',
-    bottom: '10%',
-    top: '20%',
+    left: '5%',
+    right: '5%',
+    bottom: '20%',
+    top: '10%',
     containLabel: true
   },
   xAxis: {
     type: 'category',
-    data: ['周一', '周二', '周三', '周四', '周五'],
+    data: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    boundaryGap: false,
     axisTick: {
       show: false
     },
     axisLine: {
-      lineStyle: {
-        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.3)' : 'rgba(203, 213, 225, 0.5)'
-      }
+      show: false
     },
     axisLabel: {
-      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+      color: isDarkMode.value ? '#94a3b8' : '#94a3b8',
+      fontSize: 11
     }
   },
   yAxis: {
@@ -257,87 +257,75 @@ const barChartOption = computed(() => ({
       show: false
     },
     splitLine: {
-      lineStyle: {
-        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.1)' : 'rgba(203, 213, 225, 0.3)',
-        type: 'dashed'
-      }
+      show: false
     },
     axisLabel: {
-      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+      color: isDarkMode.value ? '#94a3b8' : '#94a3b8',
+      fontSize: 11
     }
   },
   series: [
     {
-      name: '家电',
-      type: 'bar',
-      data: [234, 278, 270, 190, 230],
-      itemStyle: {
-        color: isDarkMode.value ? '#a5b4fc' : '#ddd6fe',
-        borderRadius: [3, 3, 0, 0]
+      name: 'Debit',
+      type: 'line',
+      data: [20, 35, 25, 60, 45, 75, 85],
+      smooth: true,
+      symbol: 'none',
+      lineStyle: {
+        width: 0
       },
-      emphasis: {
-        itemStyle: {
-          color: isDarkMode.value ? '#c4b5fd' : '#e4d4fd'
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.6)' : 'rgba(59, 130, 246, 0.6)' },
+            { offset: 0.5, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.4)' },
+            { offset: 1, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)' }
+          ]
         }
       },
-      barWidth: '26%'
+      stack: 'total'
     },
     {
-      name: '百货',
-      type: 'bar',
-      data: [164, 178, 190, 135, 160],
-      itemStyle: {
-        color: isDarkMode.value ? '#93c5fd' : '#bfdbfe',
-        borderRadius: [3, 3, 0, 0]
+      name: 'Credit',
+      type: 'line',
+      data: [30, 25, 40, 35, 55, 45, 65],
+      smooth: true,
+      symbol: 'none',
+      lineStyle: {
+        width: 0
       },
-      emphasis: {
-        itemStyle: {
-          color: isDarkMode.value ? '#bae6fd' : '#dbeafe'
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.7)' : 'rgba(139, 92, 246, 0.7)' },
+            { offset: 0.5, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.5)' : 'rgba(139, 92, 246, 0.5)' },
+            { offset: 1, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)' }
+          ]
         }
       },
-      barWidth: '26%'
-    },
-    {
-      name: '食品',
-      type: 'bar',
-      data: [144, 198, 150, 235, 120],
-      itemStyle: {
-        color: isDarkMode.value ? '#fed7aa' : '#fed7aa',
-        borderRadius: [3, 3, 0, 0]
-      },
-      emphasis: {
-        itemStyle: {
-          color: isDarkMode.value ? '#fde68a' : '#fef3c7'
-        }
-      },
-      barWidth: '26%'
-    },
-    {
-      name: '服装',
-      type: 'bar',
-      data: [120, 145, 180, 160, 200],
-      itemStyle: {
-        color: isDarkMode.value ? '#fca5a5' : '#fecaca',
-        borderRadius: [3, 3, 0, 0]
-      },
-      emphasis: {
-        itemStyle: {
-          color: isDarkMode.value ? '#f87171' : '#fed7d7'
-        }
-      },
-      barWidth: '26%'
+      stack: 'total'
     }
   ]
 }))
 
-// 折线图配置
-const lineChartOption = computed(() => ({
+// 环形图配置 (右侧图表)
+const donutChartOption = computed(() => ({
   backgroundColor: 'transparent',
   title: {
     show: false
   },
   tooltip: {
-    trigger: 'axis',
+    trigger: 'item',
     backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
     borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
     borderWidth: 1,
@@ -346,146 +334,68 @@ const lineChartOption = computed(() => ({
       color: isDarkMode.value ? '#e2e8f0' : '#334155',
       fontSize: 12
     },
-    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
+    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);',
+    formatter: '{a} <br/>{b}: {c} ({d}%)'
   },
   legend: {
-    data: ['家电', '百货', '食品'],
+    orient: 'vertical',
+    left: '60%',
     top: '5%',
+    itemGap: 15,
     textStyle: {
-      color: isDarkMode.value ? '#cbd5e1' : '#475569'
-    }
-  },
-  grid: {
-    left: '8%',
-    right: '8%',
-    bottom: '10%',
-    top: '20%',
-    containLabel: true
-  },
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    data: ['6月', '7月', '8月', '9月', '10月'],
-    axisLine: {
-      lineStyle: {
-        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.3)' : 'rgba(203, 213, 225, 0.5)'
-      }
+      color: isDarkMode.value ? '#cbd5e1' : '#64748b',
+      fontSize: 12
     },
-    axisTick: {
-      show: false
-    },
-    axisLabel: {
-      color: isDarkMode.value ? '#94a3b8' : '#64748b'
-    }
-  },
-  yAxis: {
-    type: 'value',
-    axisLine: {
-      show: false
-    },
-    axisTick: {
-      show: false
-    },
-    splitLine: {
-      lineStyle: {
-        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.1)' : 'rgba(203, 213, 225, 0.3)',
-        type: 'dashed'
-      }
-    },
-    axisLabel: {
-      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+    formatter: function(name: string) {
+      const data: { [key: string]: string } = {
+        'Vuestic 2.0': '(3 ms)',
+        'Vuestic 1.0': '(14 ms)',
+        'Random Vue.js Theme': '(40 ms)'
+      };
+      return name + ' ' + (data[name] || '');
     }
   },
   series: [
     {
-      name: '家电',
-      type: 'line',
-      smooth: true,
-      data: [234, 278, 270, 190, 230],
-      lineStyle: {
-        width: 3,
-        color: isDarkMode.value ? '#a78bfa' : '#c4b5fd'
+      name: 'Loading Speed',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      center: ['35%', '50%'],
+      avoidLabelOverlap: false,
+      label: {
+        show: false
       },
-      itemStyle: {
-        color: isDarkMode.value ? '#a78bfa' : '#c4b5fd',
-        borderWidth: 2,
-        borderColor: isDarkMode.value ? '#1e1b4b' : '#ffffff'
-      },
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.15)' },
-            { offset: 1, color: 'rgba(167, 139, 250, 0)' }
-          ]
+      emphasis: {
+        label: {
+          show: false
         }
       },
-      symbol: 'circle',
-      symbolSize: 5
-    },
-    {
-      name: '百货',
-      type: 'line',
-      smooth: true,
-      data: [164, 178, 150, 135, 160],
-      lineStyle: {
-        width: 3,
-        color: isDarkMode.value ? '#60a5fa' : '#93c5fd'
+      labelLine: {
+        show: false
       },
-      itemStyle: {
-        color: isDarkMode.value ? '#60a5fa' : '#93c5fd',
-        borderWidth: 2,
-        borderColor: isDarkMode.value ? '#1e1b4b' : '#ffffff'
-      },
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: isDarkMode.value ? 'rgba(96, 165, 250, 0.2)' : 'rgba(147, 197, 253, 0.15)' },
-            { offset: 1, color: 'rgba(96, 165, 250, 0)' }
-          ]
+      data: [
+        {
+          value: 60,
+          name: 'Vuestic 2.0',
+          itemStyle: {
+            color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
+          }
+        },
+        {
+          value: 25,
+          name: 'Vuestic 1.0',
+          itemStyle: {
+            color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
+          }
+        },
+        {
+          value: 15,
+          name: 'Random Vue.js Theme',
+          itemStyle: {
+            color: isDarkMode.value ? '#10b981' : '#34d399'
+          }
         }
-      },
-      symbol: 'circle',
-      symbolSize: 5
-    },
-    {
-      name: '食品',
-      type: 'line',
-      smooth: true,
-      data: [74, 118, 200, 235, 90],
-      lineStyle: {
-        width: 3,
-        color: isDarkMode.value ? '#fb923c' : '#fed7aa'
-      },
-      itemStyle: {
-        color: isDarkMode.value ? '#fb923c' : '#fed7aa',
-        borderWidth: 2,
-        borderColor: isDarkMode.value ? '#1e1b4b' : '#ffffff'
-      },
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: isDarkMode.value ? 'rgba(251, 146, 60, 0.2)' : 'rgba(254, 215, 170, 0.15)' },
-            { offset: 1, color: 'rgba(251, 146, 60, 0)' }
-          ]
-        }
-      },
-      symbol: 'circle',
-      symbolSize: 5
+      ]
     }
   ]
 }))
