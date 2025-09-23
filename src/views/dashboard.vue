@@ -375,7 +375,7 @@ const donutChartOption = computed(() => ({
       center: ['35%', '50%'],
       avoidLabelOverlap: false,
       selectedMode: 'single',
-      selectedOffset: 20,
+      selectedOffset: 0,
       label: {
         show: false
       },
