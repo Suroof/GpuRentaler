@@ -365,8 +365,8 @@ tags.clearTags();
 /* 登录表单区域 */
 .login-box {
   flex: 1;
-  max-width: 300px;
-  height: 460px;
+  max-width: 40%;
+  height: 50%;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;

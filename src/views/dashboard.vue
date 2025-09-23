@@ -618,7 +618,13 @@ const todoList = reactive([
 }
 
 .mgb20 {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .todo-item {
