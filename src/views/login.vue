@@ -409,12 +409,21 @@ tags.clearTags();
   background-color: #ffffff;
   display: flex;
   align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .logo-icon i {
-  color: white;
+  color: #ffffff;
   font-size: 20px;
+  transition: all 0.3s ease;
 }
 
 .login-header h1 {

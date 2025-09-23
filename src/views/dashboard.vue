@@ -11,12 +11,16 @@
             </div>
           </div>
           <div class="user-info-list">
-            上次登录时间：
-            <span>2022-10-01</span>
+            <div class="info-item">
+              <span class="info-label">上次登录时间：</span>
+              <span class="info-value">2022-10-01</span>
+            </div>
           </div>
           <div class="user-info-list">
-            上次登录地点：
-            <span>东莞</span>
+            <div class="info-item">
+              <span class="info-label">上次登录地点：</span>
+              <span class="info-value">东莞</span>
+            </div>
           </div>
         </el-card>
         <el-card shadow="hover" style="height: 252px">
@@ -609,12 +613,29 @@ const todoList = reactive([
   font-size: 14px;
   color: var(--text-secondary);
   line-height: 25px;
+  margin-bottom: 8px;
 }
 
-.user-info-list span {
-  margin-left: 70px;
-  color: var(--text-primary);
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+  gap: 16px;
+}
+
+.info-label {
+  color: var(--text-secondary);
   font-weight: 500;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  flex-grow: 1;
 }
 
 .mgb20 {
