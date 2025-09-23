@@ -109,13 +109,29 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="12">
-        <el-card shadow="hover">
-          <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
+        <el-card shadow="hover" class="chart-card">
+          <div class="chart-header">
+            <h3>最近一周各品类销售图</h3>
+          </div>
+          <v-chart
+            class="chart"
+            :option="barChartOption"
+            :theme="currentTheme"
+            autoresize
+          />
         </el-card>
       </el-col>
       <el-col :span="12">
-        <el-card shadow="hover">
-          <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
+        <el-card shadow="hover" class="chart-card">
+          <div class="chart-header">
+            <h3>最近几个月各品类销售趋势图</h3>
+          </div>
+          <v-chart
+            class="chart"
+            :option="lineChartOption"
+            :theme="currentTheme"
+            autoresize
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -123,56 +139,357 @@
 </template>
 
 <script setup lang="ts" name="dashboard">
-import Schart from 'vue-schart';
-import {reactive} from 'vue';
-import {useBasicStore} from "../store/basic";
+import { reactive, computed, onMounted, ref } from 'vue'
+import { use } from 'echarts/core'
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent
+} from 'echarts/components'
+import { BarChart, LineChart } from 'echarts/charts'
+import { CanvasRenderer } from 'echarts/renderers'
+import VChart, { THEME_KEY } from 'vue-echarts'
+import { provide } from 'vue'
+import { useBasicStore } from "../store/basic"
 
-let basicStore = useBasicStore();
-let userinfo = basicStore.userinfo;
+// 注册ECharts组件
+use([
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  BarChart,
+  LineChart,
+  CanvasRenderer
+])
 
-const options = {
-  type: 'bar',
+const basicStore = useBasicStore()
+const userinfo = basicStore.userinfo
+
+// 主题检测
+const isDarkMode = ref(false)
+
+const checkTheme = () => {
+  isDarkMode.value = document.documentElement.classList.contains('dark') ||
+                    document.documentElement.getAttribute('data-theme') === 'dark' ||
+                    window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+onMounted(() => {
+  checkTheme()
+  // 监听主题变化
+  const observer = new MutationObserver(checkTheme)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class', 'data-theme']
+  })
+
+  // 监听系统主题变化
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkTheme)
+})
+
+// 当前主题
+const currentTheme = computed(() => isDarkMode.value ? 'dark' : 'light')
+
+// 提供主题给ECharts
+provide(THEME_KEY, currentTheme)
+
+// 柱状图配置
+const barChartOption = computed(() => ({
+  backgroundColor: 'transparent',
   title: {
-    text: '最近一周各品类销售图'
+    show: false
   },
-  xRorate: 25,
-  labels: ['周一', '周二', '周三', '周四', '周五'],
-  datasets: [
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow',
+      shadowStyle: {
+        color: isDarkMode.value ? 'rgba(167, 139, 250, 0.1)' : 'rgba(196, 181, 253, 0.1)'
+      }
+    },
+    backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
+    borderWidth: 1,
+    borderRadius: 8,
+    textStyle: {
+      color: isDarkMode.value ? '#e2e8f0' : '#334155',
+      fontSize: 12
+    },
+    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
+  },
+  legend: {
+    data: ['家电', '百货', '食品', '服装'],
+    top: '5%',
+    textStyle: {
+      color: isDarkMode.value ? '#cbd5e1' : '#475569'
+    }
+  },
+  grid: {
+    left: '8%',
+    right: '8%',
+    bottom: '10%',
+    top: '20%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    data: ['周一', '周二', '周三', '周四', '周五'],
+    axisTick: {
+      show: false
+    },
+    axisLine: {
+      lineStyle: {
+        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.3)' : 'rgba(203, 213, 225, 0.5)'
+      }
+    },
+    axisLabel: {
+      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+    }
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    splitLine: {
+      lineStyle: {
+        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.1)' : 'rgba(203, 213, 225, 0.3)',
+        type: 'dashed'
+      }
+    },
+    axisLabel: {
+      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+    }
+  },
+  series: [
     {
-      label: '家电',
-      data: [234, 278, 270, 190, 230]
+      name: '家电',
+      type: 'bar',
+      data: [234, 278, 270, 190, 230],
+      itemStyle: {
+        color: isDarkMode.value ? '#a5b4fc' : '#ddd6fe',
+        borderRadius: [3, 3, 0, 0]
+      },
+      emphasis: {
+        itemStyle: {
+          color: isDarkMode.value ? '#c4b5fd' : '#e4d4fd'
+        }
+      },
+      barWidth: '26%'
     },
     {
-      label: '百货',
-      data: [164, 178, 190, 135, 160]
+      name: '百货',
+      type: 'bar',
+      data: [164, 178, 190, 135, 160],
+      itemStyle: {
+        color: isDarkMode.value ? '#93c5fd' : '#bfdbfe',
+        borderRadius: [3, 3, 0, 0]
+      },
+      emphasis: {
+        itemStyle: {
+          color: isDarkMode.value ? '#bae6fd' : '#dbeafe'
+        }
+      },
+      barWidth: '26%'
     },
     {
-      label: '食品',
-      data: [144, 198, 150, 235, 120]
+      name: '食品',
+      type: 'bar',
+      data: [144, 198, 150, 235, 120],
+      itemStyle: {
+        color: isDarkMode.value ? '#fed7aa' : '#fed7aa',
+        borderRadius: [3, 3, 0, 0]
+      },
+      emphasis: {
+        itemStyle: {
+          color: isDarkMode.value ? '#fde68a' : '#fef3c7'
+        }
+      },
+      barWidth: '26%'
+    },
+    {
+      name: '服装',
+      type: 'bar',
+      data: [120, 145, 180, 160, 200],
+      itemStyle: {
+        color: isDarkMode.value ? '#fca5a5' : '#fecaca',
+        borderRadius: [3, 3, 0, 0]
+      },
+      emphasis: {
+        itemStyle: {
+          color: isDarkMode.value ? '#f87171' : '#fed7d7'
+        }
+      },
+      barWidth: '26%'
     }
   ]
-};
-const options2 = {
-  type: 'line',
+}))
+
+// 折线图配置
+const lineChartOption = computed(() => ({
+  backgroundColor: 'transparent',
   title: {
-    text: '最近几个月各品类销售趋势图'
+    show: false
   },
-  labels: ['6月', '7月', '8月', '9月', '10月'],
-  datasets: [
+  tooltip: {
+    trigger: 'axis',
+    backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
+    borderWidth: 1,
+    borderRadius: 8,
+    textStyle: {
+      color: isDarkMode.value ? '#e2e8f0' : '#334155',
+      fontSize: 12
+    },
+    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
+  },
+  legend: {
+    data: ['家电', '百货', '食品'],
+    top: '5%',
+    textStyle: {
+      color: isDarkMode.value ? '#cbd5e1' : '#475569'
+    }
+  },
+  grid: {
+    left: '8%',
+    right: '8%',
+    bottom: '10%',
+    top: '20%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    data: ['6月', '7月', '8月', '9月', '10月'],
+    axisLine: {
+      lineStyle: {
+        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.3)' : 'rgba(203, 213, 225, 0.5)'
+      }
+    },
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+    }
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    splitLine: {
+      lineStyle: {
+        color: isDarkMode.value ? 'rgba(148, 163, 184, 0.1)' : 'rgba(203, 213, 225, 0.3)',
+        type: 'dashed'
+      }
+    },
+    axisLabel: {
+      color: isDarkMode.value ? '#94a3b8' : '#64748b'
+    }
+  },
+  series: [
     {
-      label: '家电',
-      data: [234, 278, 270, 190, 230]
+      name: '家电',
+      type: 'line',
+      smooth: true,
+      data: [234, 278, 270, 190, 230],
+      lineStyle: {
+        width: 3,
+        color: isDarkMode.value ? '#a78bfa' : '#c4b5fd'
+      },
+      itemStyle: {
+        color: isDarkMode.value ? '#a78bfa' : '#c4b5fd',
+        borderWidth: 2,
+        borderColor: isDarkMode.value ? '#1e1b4b' : '#ffffff'
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.15)' },
+            { offset: 1, color: 'rgba(167, 139, 250, 0)' }
+          ]
+        }
+      },
+      symbol: 'circle',
+      symbolSize: 5
     },
     {
-      label: '百货',
-      data: [164, 178, 150, 135, 160]
+      name: '百货',
+      type: 'line',
+      smooth: true,
+      data: [164, 178, 150, 135, 160],
+      lineStyle: {
+        width: 3,
+        color: isDarkMode.value ? '#60a5fa' : '#93c5fd'
+      },
+      itemStyle: {
+        color: isDarkMode.value ? '#60a5fa' : '#93c5fd',
+        borderWidth: 2,
+        borderColor: isDarkMode.value ? '#1e1b4b' : '#ffffff'
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(96, 165, 250, 0.2)' : 'rgba(147, 197, 253, 0.15)' },
+            { offset: 1, color: 'rgba(96, 165, 250, 0)' }
+          ]
+        }
+      },
+      symbol: 'circle',
+      symbolSize: 5
     },
     {
-      label: '食品',
-      data: [74, 118, 200, 235, 90]
+      name: '食品',
+      type: 'line',
+      smooth: true,
+      data: [74, 118, 200, 235, 90],
+      lineStyle: {
+        width: 3,
+        color: isDarkMode.value ? '#fb923c' : '#fed7aa'
+      },
+      itemStyle: {
+        color: isDarkMode.value ? '#fb923c' : '#fed7aa',
+        borderWidth: 2,
+        borderColor: isDarkMode.value ? '#1e1b4b' : '#ffffff'
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(251, 146, 60, 0.2)' : 'rgba(254, 215, 170, 0.15)' },
+            { offset: 1, color: 'rgba(251, 146, 60, 0)' }
+          ]
+        }
+      },
+      symbol: 'circle',
+      symbolSize: 5
     }
   ]
-};
+}))
+
 const todoList = reactive([
   {
     title: '今天要修复100个bug',
@@ -198,7 +515,7 @@ const todoList = reactive([
     title: '今天要写100行代码加几个bug吧',
     status: true
   }
-]);
+])
 </script>
 
 <style scoped>
@@ -328,12 +645,68 @@ const todoList = reactive([
   color: var(--text-tertiary);
 }
 
-.schart {
+/* 图表卡片样式 */
+.chart-card {
+  height: 400px;
+  overflow: hidden;
+}
+
+.chart-header {
+  padding: 0 0 16px 0;
+  border-bottom: 1px solid var(--border-secondary);
+  margin-bottom: 16px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-header h3::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  display: inline-block;
+}
+
+.chart {
   width: 100%;
-  height: 300px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 20px;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 响应式适配 */
+@media (max-width: 1200px) {
+  .chart-card {
+    height: 380px;
+  }
+
+  .chart {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-card {
+    height: 350px;
+  }
+
+  .chart {
+    height: 270px;
+  }
+
+  .chart-header h3 {
+    font-size: 14px;
+  }
 }
 
 /* Element Plus Components Theme Overrides for Dashboard */
@@ -393,5 +766,27 @@ const todoList = reactive([
 :deep(.el-button--text:hover) {
   color: var(--accent-primary) !important;
   background: var(--bg-hover) !important;
+}
+
+/* 图表容器深度样式优化 */
+.chart :deep(canvas) {
+  border-radius: 8px;
+}
+
+/* 图表容器扁平化处理 */
+.chart-card .chart {
+  transition: none;
+}
+
+/* 深色模式下的图表头部优化 */
+@media (prefers-color-scheme: dark) {
+  .chart-header h3::before {
+    background: #4f46e5;
+  }
+}
+
+:root.dark .chart-header h3::before,
+[data-theme="dark"] .chart-header h3::before {
+  background: #6366f1;
 }
 </style>
