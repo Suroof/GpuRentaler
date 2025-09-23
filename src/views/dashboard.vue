@@ -366,6 +366,12 @@ const donutChartOption = computed(() => ({
         show: false
       },
       emphasis: {
+        itemStyle: {
+          borderWidth: 8,
+          borderColor: isDarkMode.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)'
+        },
+        scale: true,
+        scaleSize: 15,
         label: {
           show: false
         }
@@ -377,6 +383,7 @@ const donutChartOption = computed(() => ({
         {
           value: 60,
           name: 'Vuestic 2.0',
+          selected: true,
           itemStyle: {
             color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
           }
