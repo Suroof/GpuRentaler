@@ -374,8 +374,6 @@ const donutChartOption = computed(() => ({
       radius: ['40%', '70%'],
       center: ['35%', '50%'],
       avoidLabelOverlap: false,
-      selectedMode: 'single',
-      selectedOffset: 0,
       label: {
         show: false
       },
@@ -397,7 +395,6 @@ const donutChartOption = computed(() => ({
         {
           value: 60,
           name: 'Vuestic 2.0',
-          selected: true,
           itemStyle: {
             color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
           }
