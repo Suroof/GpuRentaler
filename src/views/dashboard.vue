@@ -11,12 +11,16 @@
             </div>
           </div>
           <div class="user-info-list">
-            上次登录时间：
-            <span>2022-10-01</span>
+            <div class="info-item">
+              <span class="info-label">上次登录时间：</span>
+              <span class="info-value">2022-10-01</span>
+            </div>
           </div>
           <div class="user-info-list">
-            上次登录地点：
-            <span>东莞</span>
+            <div class="info-item">
+              <span class="info-label">上次登录地点：</span>
+              <span class="info-value">东莞</span>
+            </div>
           </div>
         </el-card>
         <el-card shadow="hover" style="height: 252px">
@@ -36,45 +40,57 @@
         </el-card>
       </el-col>
       <el-col :span="16">
-        <el-row :gutter="20" class="mgb20">
+        <el-row :gutter="24" class="mgb20">
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-1">
-                <el-icon class="grid-con-icon">
+            <div class="stats-card stats-card-1">
+              <div class="stats-icon">
+                <el-icon>
                   <User/>
                 </el-icon>
-                <div class="grid-cont-right">
-                  <div class="grid-num">1234</div>
-                  <div>用户访问量</div>
+              </div>
+              <div class="stats-content">
+                <div class="stats-label">用户访问量</div>
+                <div class="stats-number">1,234</div>
+                <div class="stats-trend">
+                  <span class="trend-up">↗ +12%</span>
                 </div>
               </div>
-            </el-card>
+              <div class="stats-bg-pattern"></div>
+            </div>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-2">
-                <el-icon class="grid-con-icon">
+            <div class="stats-card stats-card-2">
+              <div class="stats-icon">
+                <el-icon>
                   <ChatDotRound/>
                 </el-icon>
-                <div class="grid-cont-right">
-                  <div class="grid-num">321</div>
-                  <div>系统消息</div>
+              </div>
+              <div class="stats-content">
+                <div class="stats-label">系统消息</div>
+                <div class="stats-number">321</div>
+                <div class="stats-trend">
+                  <span class="trend-up">↗ +8%</span>
                 </div>
               </div>
-            </el-card>
+              <div class="stats-bg-pattern"></div>
+            </div>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-3">
-                <el-icon class="grid-con-icon">
+            <div class="stats-card stats-card-3">
+              <div class="stats-icon">
+                <el-icon>
                   <Goods/>
                 </el-icon>
-                <div class="grid-cont-right">
-                  <div class="grid-num">5000</div>
-                  <div>商品数量</div>
+              </div>
+              <div class="stats-content">
+                <div class="stats-label">商品数量</div>
+                <div class="stats-number">5,000</div>
+                <div class="stats-trend">
+                  <span class="trend-down">↘ -3%</span>
                 </div>
               </div>
-            </el-card>
+              <div class="stats-bg-pattern"></div>
+            </div>
           </el-col>
         </el-row>
         <el-card shadow="hover" style="height: 403px">
@@ -109,13 +125,29 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="12">
-        <el-card shadow="hover">
-          <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
+        <el-card shadow="hover" class="chart-card">
+          <div class="chart-header">
+            <h3>趋势分析图</h3>
+          </div>
+          <v-chart
+            class="chart"
+            :option="areaChartOption"
+            :theme="currentTheme"
+            autoresize
+          />
         </el-card>
       </el-col>
       <el-col :span="12">
-        <el-card shadow="hover">
-          <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
+        <el-card shadow="hover" class="chart-card">
+          <div class="chart-header">
+            <h3>加载速度</h3>
+          </div>
+          <v-chart
+            class="chart"
+            :option="donutChartOption"
+            :theme="currentTheme"
+            autoresize
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -123,56 +155,273 @@
 </template>
 
 <script setup lang="ts" name="dashboard">
-import Schart from 'vue-schart';
-import {reactive} from 'vue';
-import {useBasicStore} from "../store/basic";
+import { reactive, computed, onMounted, ref } from 'vue'
+import { use } from 'echarts/core'
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent
+} from 'echarts/components'
+import { BarChart, LineChart, PieChart } from 'echarts/charts'
+import { CanvasRenderer } from 'echarts/renderers'
+import VChart, { THEME_KEY } from 'vue-echarts'
+import { provide } from 'vue'
+import { useBasicStore } from "../store/basic"
 
-let basicStore = useBasicStore();
-let userinfo = basicStore.userinfo;
+// 注册ECharts组件
+use([
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  BarChart,
+  LineChart,
+  PieChart,
+  CanvasRenderer
+])
 
-const options = {
-  type: 'bar',
+const basicStore = useBasicStore()
+const userinfo = basicStore.userinfo
+
+// 主题检测
+const isDarkMode = ref(false)
+
+const checkTheme = () => {
+  isDarkMode.value = document.documentElement.classList.contains('dark') ||
+                    document.documentElement.getAttribute('data-theme') === 'dark' ||
+                    window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+onMounted(() => {
+  checkTheme()
+  // 监听主题变化
+  const observer = new MutationObserver(checkTheme)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class', 'data-theme']
+  })
+
+  // 监听系统主题变化
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkTheme)
+})
+
+// 当前主题
+const currentTheme = computed(() => isDarkMode.value ? 'dark' : 'light')
+
+// 提供主题给ECharts
+provide(THEME_KEY, currentTheme)
+
+// 面积图配置 (左侧图表)
+const areaChartOption = computed(() => ({
+  backgroundColor: 'transparent',
   title: {
-    text: '最近一周各品类销售图'
+    show: false
   },
-  xRorate: 25,
-  labels: ['周一', '周二', '周三', '周四', '周五'],
-  datasets: [
+  tooltip: {
+    trigger: 'axis',
+    backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
+    borderWidth: 1,
+    borderRadius: 8,
+    textStyle: {
+      color: isDarkMode.value ? '#e2e8f0' : '#334155',
+      fontSize: 12
+    },
+    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
+  },
+  legend: {
+    data: ['Debit', 'Credit'],
+    bottom: '10%',
+    left: 'center',
+    itemGap: 20,
+    textStyle: {
+      color: isDarkMode.value ? '#cbd5e1' : '#64748b',
+      fontSize: 12
+    },
+    itemWidth: 12,
+    itemHeight: 12
+  },
+  grid: {
+    left: '5%',
+    right: '5%',
+    bottom: '20%',
+    top: '10%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    data: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    boundaryGap: false,
+    axisTick: {
+      show: false
+    },
+    axisLine: {
+      show: false
+    },
+    axisLabel: {
+      color: isDarkMode.value ? '#94a3b8' : '#94a3b8',
+      fontSize: 11
+    }
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    splitLine: {
+      show: false
+    },
+    axisLabel: {
+      color: isDarkMode.value ? '#94a3b8' : '#94a3b8',
+      fontSize: 11
+    }
+  },
+  series: [
     {
-      label: '家电',
-      data: [234, 278, 270, 190, 230]
+      name: 'Debit',
+      type: 'line',
+      data: [20, 35, 25, 60, 45, 75, 85],
+      smooth: true,
+      symbol: 'none',
+      lineStyle: {
+        width: 0
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.6)' : 'rgba(59, 130, 246, 0.6)' },
+            { offset: 0.5, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.4)' },
+            { offset: 1, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)' }
+          ]
+        }
+      },
+      stack: 'total'
     },
     {
-      label: '百货',
-      data: [164, 178, 190, 135, 160]
-    },
-    {
-      label: '食品',
-      data: [144, 198, 150, 235, 120]
+      name: 'Credit',
+      type: 'line',
+      data: [30, 25, 40, 35, 55, 45, 65],
+      smooth: true,
+      symbol: 'none',
+      lineStyle: {
+        width: 0
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.7)' : 'rgba(139, 92, 246, 0.7)' },
+            { offset: 0.5, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.5)' : 'rgba(139, 92, 246, 0.5)' },
+            { offset: 1, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)' }
+          ]
+        }
+      },
+      stack: 'total'
     }
   ]
-};
-const options2 = {
-  type: 'line',
+}))
+
+// 环形图配置 (右侧图表)
+const donutChartOption = computed(() => ({
+  backgroundColor: 'transparent',
   title: {
-    text: '最近几个月各品类销售趋势图'
+    show: false
   },
-  labels: ['6月', '7月', '8月', '9月', '10月'],
-  datasets: [
-    {
-      label: '家电',
-      data: [234, 278, 270, 190, 230]
+  tooltip: {
+    trigger: 'item',
+    backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+    borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
+    borderWidth: 1,
+    borderRadius: 8,
+    textStyle: {
+      color: isDarkMode.value ? '#e2e8f0' : '#334155',
+      fontSize: 12
     },
-    {
-      label: '百货',
-      data: [164, 178, 150, 135, 160]
+    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);',
+    formatter: '{a} <br/>{b}: {c} ({d}%)'
+  },
+  legend: {
+    orient: 'vertical',
+    left: '60%',
+    top: '5%',
+    itemGap: 15,
+    textStyle: {
+      color: isDarkMode.value ? '#cbd5e1' : '#64748b',
+      fontSize: 12
     },
+    formatter: function(name: string) {
+      const data: { [key: string]: string } = {
+        'Vuestic 2.0': '(3 ms)',
+        'Vuestic 1.0': '(14 ms)',
+        'Random Vue.js Theme': '(40 ms)'
+      };
+      return name + ' ' + (data[name] || '');
+    }
+  },
+  series: [
     {
-      label: '食品',
-      data: [74, 118, 200, 235, 90]
+      name: 'Loading Speed',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      center: ['35%', '50%'],
+      avoidLabelOverlap: false,
+      label: {
+        show: false
+      },
+      emphasis: {
+        itemStyle: {
+          borderWidth: 8,
+          borderColor: isDarkMode.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)'
+        },
+        scale: true,
+        scaleSize: 15,
+        label: {
+          show: false
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        {
+          value: 60,
+          name: 'Vuestic 2.0',
+          itemStyle: {
+            color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
+          }
+        },
+        {
+          value: 25,
+          name: 'Vuestic 1.0',
+          itemStyle: {
+            color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
+          }
+        },
+        {
+          value: 15,
+          name: 'Random Vue.js Theme',
+          itemStyle: {
+            color: isDarkMode.value ? '#10b981' : '#34d399'
+          }
+        }
+      ]
     }
   ]
-};
+}))
+
 const todoList = reactive([
   {
     title: '今天要修复100个bug',
@@ -198,7 +447,7 @@ const todoList = reactive([
     title: '今天要写100行代码加几个bug吧',
     status: true
   }
-]);
+])
 </script>
 
 <style scoped>
@@ -206,79 +455,137 @@ const todoList = reactive([
   margin-bottom: 20px;
 }
 
-.grid-content {
+/* 统计卡片样式 */
+.stats-card {
+  position: relative;
   display: flex;
   align-items: center;
-  height: 100px;
+  height: 120px;
   background: var(--gradient-card);
   backdrop-filter: blur(20px);
-  border-radius: 12px;
-  padding: 0 20px;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-primary);
+  border-bottom: 2px solid var(--border-primary);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.grid-content:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-heavy);
+.stats-card:hover {
+  transform: translateY(-8px);
+  border-bottom: 10px solid rgba(226, 226, 226, 0.8);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.grid-cont-right {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.grid-num {
-  font-size: 30px;
-  font-weight: bold;
-  color: var(--text-primary);
-}
-
-.grid-con-icon {
-  font-size: 50px;
-  width: 70px;
-  height: 70px;
-  text-align: center;
-  line-height: 70px;
-  color: #fff;
+.stats-icon {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 20px;
+  transition: all 0.3s ease;
 }
 
-.grid-content:hover .grid-con-icon {
-  transform: scale(1.1);
+.stats-icon .el-icon {
+  font-size: 32px;
+  color: #ffffff;
 }
 
-.grid-con-1 .grid-con-icon {
-  background: linear-gradient(135deg, #2d8cf0, #1976d2);
-  box-shadow: 0 8px 25px rgba(45, 140, 240, 0.4);
+.stats-content {
+  flex: 1;
+  z-index: 2;
 }
 
-.grid-con-1 .grid-num {
-  color: #2d8cf0;
+.stats-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
 
-.grid-con-2 .grid-con-icon {
-  background: linear-gradient(135deg, #64d572, #4caf50);
-  box-shadow: 0 8px 25px rgba(100, 213, 114, 0.4);
+.stats-number {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.grid-con-2 .grid-num {
-  color: #64d572;
+.stats-trend {
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.grid-con-3 .grid-con-icon {
-  background: linear-gradient(135deg, #f25e43, #e91e63);
-  box-shadow: 0 8px 25px rgba(242, 94, 67, 0.4);
+.trend-up {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
-.grid-con-3 .grid-num {
-  color: #f25e43;
+.trend-down {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.stats-bg-pattern {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+}
+
+.stats-card:hover .stats-bg-pattern {
+  transform: scale(1.1) rotate(10deg);
+  opacity: 0.15;
+}
+
+.stats-card:hover .stats-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+/* 卡片特定样式 */
+.stats-card-1 .stats-icon {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+}
+
+.stats-card-1 .stats-bg-pattern {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.stats-card-2 .stats-icon {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  box-shadow: 0 8px 32px rgba(240, 147, 251, 0.4);
+}
+
+.stats-card-2 .stats-bg-pattern {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.stats-card-3 .stats-icon {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  box-shadow: 0 8px 32px rgba(79, 172, 254, 0.4);
+}
+
+.stats-card-3 .stats-bg-pattern {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
 }
 
 .user-info {
@@ -306,16 +613,39 @@ const todoList = reactive([
   font-size: 14px;
   color: var(--text-secondary);
   line-height: 25px;
+  margin-bottom: 8px;
 }
 
-.user-info-list span {
-  margin-left: 70px;
-  color: var(--text-primary);
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+  gap: 16px;
+}
+
+.info-label {
+  color: var(--text-secondary);
   font-weight: 500;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+  flex-grow: 1;
 }
 
 .mgb20 {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .todo-item {
@@ -328,12 +658,68 @@ const todoList = reactive([
   color: var(--text-tertiary);
 }
 
-.schart {
+/* 图表卡片样式 */
+.chart-card {
+  height: 400px;
+  overflow: hidden;
+}
+
+.chart-header {
+  padding: 0 0 16px 0;
+  border-bottom: 1px solid var(--border-secondary);
+  margin-bottom: 16px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-header h3::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 1px;
+  display: inline-block;
+}
+
+.chart {
   width: 100%;
-  height: 300px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 20px;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 响应式适配 */
+@media (max-width: 1200px) {
+  .chart-card {
+    height: 380px;
+  }
+
+  .chart {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-card {
+    height: 350px;
+  }
+
+  .chart {
+    height: 270px;
+  }
+
+  .chart-header h3 {
+    font-size: 14px;
+  }
 }
 
 /* Element Plus Components Theme Overrides for Dashboard */
@@ -393,5 +779,27 @@ const todoList = reactive([
 :deep(.el-button--text:hover) {
   color: var(--accent-primary) !important;
   background: var(--bg-hover) !important;
+}
+
+/* 图表容器深度样式优化 */
+.chart :deep(canvas) {
+  border-radius: 8px;
+}
+
+/* 图表容器扁平化处理 */
+.chart-card .chart {
+  transition: none;
+}
+
+/* 深色模式下的图表头部优化 */
+@media (prefers-color-scheme: dark) {
+  .chart-header h3::before {
+    background: #4f46e5;
+  }
+}
+
+:root.dark .chart-header h3::before,
+[data-theme="dark"] .chart-header h3::before {
+  background: #6366f1;
 }
 </style>

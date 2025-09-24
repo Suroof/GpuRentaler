@@ -9,7 +9,7 @@
         <Fold/>
       </el-icon>
     </div>
-    <div class="logo">Admin3后台管理系统</div>
+    <div class="logo">GPU Rent</div>
     <div class="header-right">
       <div class="header-user-con">
         <!-- 主题切换按钮 -->

@@ -1,13 +1,67 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
 
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Admin3后台管理系统</title>
-  <link rel="stylesheet" href="https://at.alicdn.com/t/font_830376_qzecyukz0s.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- SEO优化 -->
+  <title>GPU Rent</title>
+  <meta name="description" content="提供高性能GPU租赁服务，支持AI训练、机器学习、深度学习等场景，按需付费，灵活配置">
+  <meta name="keywords" content="GPU租赁,AI训练,机器学习,深度学习,云计算">
+  <meta name="author" content="GPU Rent">
+
+  <!-- 图标配置 -->
+  <link rel="icon" type="image/svg+xml" href="/database.svg">
+  <link rel="apple-touch-icon" href="/database.svg">
+
+  <!-- DNS预解析 -->
+  <link rel="dns-prefetch" href="//at.alicdn.com">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+
+  <!-- 关键资源预加载 -->
+  <link rel="preconnect" href="https://at.alicdn.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+  <!-- 字体预加载优化 -->
+  <link rel="preload" href="https://at.alicdn.com/t/font_830376_qzecyukz0s.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <!-- 关键CSS内联（减少渲染阻塞） -->
+  <style>
+    /* 关键渲染路径CSS */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
+    body{color:#2c3e50;background:#ffffff;font-size:14px}
+    #app{min-height:100vh}
+
+    /* 加载动画 */
+    .loading-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:9999}
+    .loading-spinner{width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #409eff;border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+  </style>
+
+  <!-- 非关键CSS延迟加载 -->
+  <noscript>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_830376_qzecyukz0s.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  </noscript>
+
+  <!-- 性能监控 -->
+  <script>
+    // 性能监控
+    window.performance && window.performance.mark && window.performance.mark('page_start');
+
+    // Web Vitals预设
+    window.addEventListener('DOMContentLoaded', function() {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(function() {
+          // 延迟加载非关键脚本
+        });
+      }
+    });
+  </script>
 </head>
 
 <body>
