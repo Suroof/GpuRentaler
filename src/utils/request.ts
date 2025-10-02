@@ -3,6 +3,7 @@ import {ElMessage} from "element-plus";
 import router from "../router";
 
 const service: AxiosInstance = axios.create({
+    baseURL: '/admin3',
     timeout: 5000
 });
 
