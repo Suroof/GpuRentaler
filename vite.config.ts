@@ -68,7 +68,7 @@ export default defineConfig(({ command, mode }) => {
       cors: true,
       proxy: {
         "/admin3": {
-          target: "http://7b1ba5cb.r31.cpolar.top",
+          target: "http://5464ece7.r31.cpolar.top",
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/admin3/, "/admin3"),
