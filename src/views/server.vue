@@ -15,35 +15,56 @@
         style="width: 100%"
         stripe
       >
-        <el-table-column prop="id" label="服务器ID" width="80"></el-table-column>
-        <el-table-column prop="hostname" label="主机名" width="120"></el-table-column>
-        <el-table-column prop="ipAddress" label="IP地址" width="150"></el-table-column>
-        <el-table-column prop="cpuModel" label="CPU型号" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="cpuCores" label="CPU核心数" width="100"></el-table-column>
+        <el-table-column
+          prop="id"
+          label="服务器ID"
+          width="80"
+        ></el-table-column>
+        <el-table-column
+          prop="hostname"
+          label="主机名"
+          width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="ipAddress"
+          label="IP地址"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="cpuModel"
+          label="CPU型号"
+          show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column
+          prop="cpuCores"
+          label="CPU核心数"
+          width="100"
+        ></el-table-column>
         <el-table-column prop="ramTotalGb" label="内存(GB)" width="100">
-          <template #default="scope">
-            {{ scope.row.ramTotalGb }} GB
-          </template>
+          <template #default="scope"> {{ scope.row.ramTotalGb }} GB </template>
         </el-table-column>
         <el-table-column prop="storageTotalGb" label="存储(GB)" width="100">
           <template #default="scope">
             {{ scope.row.storageTotalGb }} GB
           </template>
         </el-table-column>
-        <el-table-column prop="gpuSlots" label="GPU插槽数" width="100"></el-table-column>
+        <el-table-column
+          prop="gpuSlots"
+          label="GPU插槽数"
+          width="100"
+        ></el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 'ONLINE' ? 'success' : 'danger'">
-              {{ scope.row.status === 'ONLINE' ? '在线' : '离线' }}
+            <el-tag
+              :type="scope.row.status === 'ONLINE' ? 'success' : 'danger'"
+            >
+              {{ scope.row.status === "ONLINE" ? "在线" : "离线" }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right" background-color="#fff !important">
           <template #default="scope">
-            <el-button
-              size="small"
-              @click="handleEdit(scope.row)"
-            >
+            <el-button size="small" @click="handleEdit(scope.row)">
               编辑
             </el-button>
             <el-button
@@ -157,9 +178,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { ElMessage, ElMessageBox, ElForm } from 'element-plus';
-import { getServerList, addServer, delServer } from '../api/server';
+import { ref, onMounted } from "vue";
+import { ElMessage, ElMessageBox, ElForm } from "element-plus";
+import { getServerList, addServer, delServer } from "../api/server";
 
 // 定义服务器数据类型
 interface Server {
@@ -187,54 +208,42 @@ const editDialogVisible = ref(false);
 const serverFormRef = ref<InstanceType<typeof ElForm>>();
 const serverForm = ref({
   id: 0,
-  hostname: '',
-  ipAddress: '',
-  cpuModel: '',
+  hostname: "",
+  ipAddress: "",
+  cpuModel: "",
   cpuCores: 1,
   ramTotalGb: 1,
   storageTotalGb: 1,
   gpuSlots: 0,
-  status: 'OFFLINE'
+  status: "OFFLINE",
 });
 
 // 表单验证规则
 const serverFormRules = {
-  hostname: [
-    { required: true, message: '请输入主机名', trigger: 'blur' }
-  ],
+  hostname: [{ required: true, message: "请输入主机名", trigger: "blur" }],
   ipAddress: [
-    { required: true, message: '请输入IP地址', trigger: 'blur' },
+    { required: true, message: "请输入IP地址", trigger: "blur" },
     {
       pattern: /^(\d{1,3}\.){3}\d{1,3}$/,
-      message: '请输入正确的IP地址格式',
-      trigger: 'blur'
-    }
+      message: "请输入正确的IP地址格式",
+      trigger: "blur",
+    },
   ],
-  cpuModel: [
-    { required: true, message: '请输入CPU型号', trigger: 'blur' }
-  ],
-  cpuCores: [
-    { required: true, message: '请输入CPU核心数', trigger: 'blur' }
-  ],
-  ramTotalGb: [
-    { required: true, message: '请输入内存大小', trigger: 'blur' }
-  ],
+  cpuModel: [{ required: true, message: "请输入CPU型号", trigger: "blur" }],
+  cpuCores: [{ required: true, message: "请输入CPU核心数", trigger: "blur" }],
+  ramTotalGb: [{ required: true, message: "请输入内存大小", trigger: "blur" }],
   storageTotalGb: [
-    { required: true, message: '请输入存储大小', trigger: 'blur' }
+    { required: true, message: "请输入存储大小", trigger: "blur" },
   ],
-  gpuSlots: [
-    { required: true, message: '请输入GPU插槽数', trigger: 'blur' }
-  ],
-  status: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ]
+  gpuSlots: [{ required: true, message: "请输入GPU插槽数", trigger: "blur" }],
+  status: [{ required: true, message: "请选择状态", trigger: "change" }],
 };
 
 // 分页相关
 const pagination = ref({
   currentPage: 1,
   pageSize: 10,
-  total: 0
+  total: 0,
 });
 
 // 刷新服务器列表
@@ -251,8 +260,8 @@ const fetchServerList = async () => {
     serverList.value = response.data.list || [];
     pagination.value.total = response.data.total || serverList.value.length;
   } catch (error) {
-    ElMessage.error('获取服务器列表失败');
-    console.error('获取服务器列表失败:', error);
+    ElMessage.error("获取服务器列表失败");
+    console.error("获取服务器列表失败:", error);
   } finally {
     loading.value = false;
   }
@@ -280,11 +289,11 @@ const handleModify = async (row: Server) => {
     };
 
     await addServer(row.id, serverData);
-    ElMessage.success('服务器更新成功');
+    ElMessage.success("服务器更新成功");
     fetchServerList();
   } catch (error) {
-    ElMessage.error('服务器更新失败');
-    console.error('服务器更新失败:', error);
+    ElMessage.error("服务器更新失败");
+    console.error("服务器更新失败:", error);
   }
 };
 
@@ -292,24 +301,26 @@ const handleModify = async (row: Server) => {
 const handleDelete = async (row: Server) => {
   ElMessageBox.confirm(
     `确定要删除服务器 "${row.hostname}" 吗？此操作不可恢复！`,
-    '确认删除',
+    "确认删除",
     {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     }
-  ).then(async () => {
-    try {
-      await delServer(row.id);
-      ElMessage.success('删除成功');
-      fetchServerList();
-    } catch (error) {
-      ElMessage.error('删除失败');
-      console.error('删除服务器失败:', error);
-    }
-  }).catch(() => {
-    // 用户取消删除
-  });
+  )
+    .then(async () => {
+      try {
+        await delServer(row.id);
+        ElMessage.success("删除成功");
+        fetchServerList();
+      } catch (error) {
+        ElMessage.error("删除失败");
+        console.error("删除服务器失败:", error);
+      }
+    })
+    .catch(() => {
+      // 用户取消删除
+    });
 };
 
 // 提交服务器表单
@@ -333,12 +344,12 @@ const submitServerForm = async () => {
         };
 
         await addServer(serverForm.value.id, serverData);
-        ElMessage.success('服务器更新成功');
+        ElMessage.success("服务器更新成功");
         editDialogVisible.value = false;
         fetchServerList();
       } catch (error) {
-        ElMessage.error('服务器更新失败');
-        console.error('服务器更新失败:', error);
+        ElMessage.error("服务器更新失败");
+        console.error("服务器更新失败:", error);
       } finally {
         submitLoading.value = false;
       }
@@ -391,5 +402,29 @@ onMounted(() => {
 
 .dialog-footer {
   text-align: right;
+}
+
+.el-table__cell {
+  background-color: #fff !important;
+}
+
+/* 修改 el-table 单元格背景颜色 */
+.el-table__body td.el-table__cell {
+  background-color: #fff !important;
+}
+
+/* 确保所有状态下的单元格都有白色背景 */
+.el-table__body td.el-table__cell:hover {
+  background-color: #fff !important;
+}
+
+/* 修改固定列的单元格背景颜色 */
+.el-table__fixed-right .el-table__body td.el-table__cell {
+  background-color: #fff !important;
+}
+
+/* 修改表头单元格背景颜色 */
+.el-table__header th.el-table__cell {
+  background-color: #f5f7fa !important;
 }
 </style>

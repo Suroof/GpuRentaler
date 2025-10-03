@@ -30,7 +30,9 @@
                   <el-option label="已租用" value="OFFLINE" />
                   <el-option label="未知" value="UNKNOWN" />
                 </el-select>
-                <el-button type="primary" @click="fetchGpuDevices">刷新</el-button>
+                <el-button type="primary" @click="fetchGpuDevices"
+                  >刷新</el-button
+                >
               </div>
             </div>
           </template>
@@ -41,15 +43,31 @@
             style="width: 100%"
             stripe
           >
-            <el-table-column prop="deviceId" label="设备ID" width="120"></el-table-column>
-            <el-table-column prop="brand" label="品牌" width="100"></el-table-column>
-            <el-table-column prop="model" label="型号" width="120"></el-table-column>
+            <el-table-column
+              prop="deviceId"
+              label="设备ID"
+              width="120"
+            ></el-table-column>
+            <el-table-column
+              prop="brand"
+              label="品牌"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="model"
+              label="型号"
+              width="120"
+            ></el-table-column>
             <el-table-column prop="memoryTotal" label="显存(MB)" width="100">
               <template #default="scope">
                 {{ scope.row.memoryTotal }}
               </template>
             </el-table-column>
-            <el-table-column prop="architecture" label="架构" width="120"></el-table-column>
+            <el-table-column
+              prop="architecture"
+              label="架构"
+              width="120"
+            ></el-table-column>
             <el-table-column prop="status" label="状态" width="100">
               <template #default="scope">
                 <el-tag :type="getDeviceStatusType(scope.row.status)">
@@ -60,19 +78,31 @@
             <el-table-column prop="isRentable" label="可租用" width="80">
               <template #default="scope">
                 <el-tag :type="scope.row.isRentable ? 'success' : 'danger'">
-                  {{ scope.row.isRentable ? '是' : '否' }}
+                  {{ scope.row.isRentable ? "是" : "否" }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="hourlyRate" label="时价($)" width="100"></el-table-column>
-            <el-table-column prop="totalRevenue" label="总收入($)" width="100"></el-table-column>
+            <el-table-column
+              prop="hourlyRate"
+              label="时价($)"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="totalRevenue"
+              label="总收入($)"
+              width="100"
+            ></el-table-column>
             <el-table-column label="操作" width="200" fixed="right">
               <template #default="scope">
-                <el-button size="small" @click="handleEditDevice(scope.row)">编辑</el-button>
+                <el-button size="small" @click="handleEditDevice(scope.row)"
+                  >编辑</el-button
+                >
                 <el-button
                   size="small"
                   type="primary"
-                  :disabled="!scope.row.isRentable || scope.row.status !== 'AVAILABLE'"
+                  :disabled="
+                    !scope.row.isRentable || scope.row.status !== 'AVAILABLE'
+                  "
                   @click="handleLeaseDevice(scope.row)"
                 >
                   租用
@@ -108,7 +138,9 @@
           <template #header>
             <div class="card-header">
               <span>可租用GPU设备</span>
-              <el-button type="primary" @click="fetchRentableDevices">刷新</el-button>
+              <el-button type="primary" @click="fetchRentableDevices"
+                >刷新</el-button
+              >
             </div>
           </template>
 
@@ -118,12 +150,36 @@
             style="width: 100%"
             stripe
           >
-            <el-table-column prop="deviceId" label="设备ID" width="120"></el-table-column>
-            <el-table-column prop="brand" label="品牌" width="100"></el-table-column>
-            <el-table-column prop="model" label="型号" width="120"></el-table-column>
-            <el-table-column prop="memoryTotal" label="显存(MB)" width="100"></el-table-column>
-            <el-table-column prop="architecture" label="架构" width="120"></el-table-column>
-            <el-table-column prop="hourlyRate" label="时价($)" width="100"></el-table-column>
+            <el-table-column
+              prop="deviceId"
+              label="设备ID"
+              width="120"
+            ></el-table-column>
+            <el-table-column
+              prop="brand"
+              label="品牌"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="model"
+              label="型号"
+              width="120"
+            ></el-table-column>
+            <el-table-column
+              prop="memoryTotal"
+              label="显存(MB)"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="architecture"
+              label="架构"
+              width="120"
+            ></el-table-column>
+            <el-table-column
+              prop="hourlyRate"
+              label="时价($)"
+              width="100"
+            ></el-table-column>
             <el-table-column label="操作" width="150" fixed="right">
               <template #default="scope">
                 <el-button
@@ -157,7 +213,9 @@
           <template #header>
             <div class="card-header">
               <span>我的GPU租用记录</span>
-              <el-button type="primary" @click="fetchMyLeaseRecords">刷新</el-button>
+              <el-button type="primary" @click="fetchMyLeaseRecords"
+                >刷新</el-button
+              >
             </div>
           </template>
 
@@ -167,8 +225,16 @@
             style="width: 100%"
             stripe
           >
-            <el-table-column prop="gpuDevice.deviceId" label="设备ID" width="120"></el-table-column>
-            <el-table-column prop="gpuDevice.model" label="型号" width="120"></el-table-column>
+            <el-table-column
+              prop="gpuDevice.deviceId"
+              label="设备ID"
+              width="120"
+            ></el-table-column>
+            <el-table-column
+              prop="gpuDevice.model"
+              label="型号"
+              width="120"
+            ></el-table-column>
             <el-table-column prop="startTime" label="开始时间" width="180">
               <template #default="scope">
                 {{ formatDateTime(scope.row.startTime) }}
@@ -179,8 +245,16 @@
                 {{ formatDateTime(scope.row.endTime) }}
               </template>
             </el-table-column>
-            <el-table-column prop="actualDurationHours" label="时长(小时)" width="100"></el-table-column>
-            <el-table-column prop="hourlyRate" label="时价($)" width="100"></el-table-column>
+            <el-table-column
+              prop="actualDurationHours"
+              label="时长(小时)"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="hourlyRate"
+              label="时价($)"
+              width="100"
+            ></el-table-column>
             <el-table-column prop="status" label="状态" width="100">
               <template #default="scope">
                 <el-tag :type="getLeaseStatusType(scope.row.status)">
@@ -229,7 +303,9 @@
           <template #header>
             <div class="card-header">
               <span>所有GPU租用记录</span>
-              <el-button type="primary" @click="fetchAllLeaseRecords">刷新</el-button>
+              <el-button type="primary" @click="fetchAllLeaseRecords"
+                >刷新</el-button
+              >
             </div>
           </template>
 
@@ -239,9 +315,21 @@
             style="width: 100%"
             stripe
           >
-            <el-table-column prop="userId" label="用户ID" width="100"></el-table-column>
-            <el-table-column prop="gpuDevice.deviceId" label="设备ID" width="120"></el-table-column>
-            <el-table-column prop="gpuDevice.model" label="型号" width="120"></el-table-column>
+            <el-table-column
+              prop="userId"
+              label="用户ID"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="gpuDevice.deviceId"
+              label="设备ID"
+              width="120"
+            ></el-table-column>
+            <el-table-column
+              prop="gpuDevice.model"
+              label="型号"
+              width="120"
+            ></el-table-column>
             <el-table-column prop="startTime" label="开始时间" width="180">
               <template #default="scope">
                 {{ formatDateTime(scope.row.startTime) }}
@@ -252,8 +340,16 @@
                 {{ formatDateTime(scope.row.endTime) }}
               </template>
             </el-table-column>
-            <el-table-column prop="actualDurationHours" label="时长(小时)" width="100"></el-table-column>
-            <el-table-column prop="hourlyRate" label="时价($)" width="100"></el-table-column>
+            <el-table-column
+              prop="actualDurationHours"
+              label="时长(小时)"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="hourlyRate"
+              label="时价($)"
+              width="100"
+            ></el-table-column>
             <el-table-column prop="status" label="状态" width="100">
               <template #default="scope">
                 <el-tag :type="getLeaseStatusType(scope.row.status)">
@@ -347,12 +443,9 @@
       v-model="leaseDeviceDialogVisible"
       title="租用GPU设备"
       width="500px"
+      @close="handleLeaseDialogClose"
     >
-      <el-form
-        ref="leaseFormRef"
-        :model="leaseForm"
-        label-width="120px"
-      >
+      <el-form ref="leaseFormRef" :model="leaseForm" label-width="120px">
         <el-form-item label="设备ID">
           <el-input v-model="leaseForm.deviceId" disabled />
         </el-form-item>
@@ -372,6 +465,26 @@
           >
             <template #append>小时</template>
           </el-input-number>
+        </el-form-item>
+        <el-form-item label="上传配置文件">
+          <input
+            ref="fileInputRef"
+            type="file"
+            accept=".tar,.tar.gz,.tgz"
+            @change="handleFileChange"
+            style="width: 100%"
+          />
+          <div v-if="leaseFile" class="file-info">
+            <span>已选择: {{ leaseFile.name }}</span>
+            <el-button
+              type="danger"
+              size="small"
+              @click="clearFileSelection"
+              style="margin-left: 10px"
+            >
+              清除
+            </el-button>
+          </div>
         </el-form-item>
       </el-form>
 
@@ -440,9 +553,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { ElMessage, ElMessageBox, ElForm } from 'element-plus';
-import { Search } from '@element-plus/icons-vue';
+import { ref, onMounted } from "vue";
+import { ElMessage, ElMessageBox, ElForm } from "element-plus";
+import { Search } from "@element-plus/icons-vue";
 import {
   getGpuDeviceList,
   getRentableGpuDevices,
@@ -451,8 +564,8 @@ import {
   updateGpuDevice,
   deleteGpuDevice,
   getMyLeaseRecords,
-  getAllLeaseRecords
-} from '../api/gpu';
+  getAllLeaseRecords,
+} from "../api/gpu";
 
 // 定义数据类型
 interface GpuDevice {
@@ -491,56 +604,59 @@ interface LeaseRecord {
 }
 
 // 响应式变量
-const activeTab = ref('devices');
+const activeTab = ref("devices");
 
 // 设备管理相关
 const gpuDevices = ref<GpuDevice[]>([]);
 const devicesLoading = ref(false);
 const editDeviceDialogVisible = ref(false);
-const editDeviceDialogTitle = ref('');
+const editDeviceDialogTitle = ref("");
 const deviceFormLoading = ref(false);
 const deviceFormRef = ref<InstanceType<typeof ElForm>>();
 const leaseDeviceDialogVisible = ref(false);
 const leaseLoading = ref(false);
 const leaseFormRef = ref<InstanceType<typeof ElForm>>();
 
+const leaseFile = ref<File | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
+
 const deviceFilters = ref({
-  keyword: '',
-  status: ''
+  keyword: "",
+  status: "",
 });
 
 const deviceForm = ref({
-  deviceId: '',
+  deviceId: "",
   deviceIndex: 0,
-  brand: '',
-  model: '',
+  brand: "",
+  model: "",
   memoryTotal: 0,
-  architecture: '',
-  memoryType: '',
-  status: 'AVAILABLE',
+  architecture: "",
+  memoryType: "",
+  status: "AVAILABLE",
   isRentable: true,
-  hourlyRate: '0.00'
+  hourlyRate: "0.00",
 });
 
 const leaseForm = ref({
-  deviceId: '',
-  model: '',
-  hourlyRate: '',
-  duration: 1
+  deviceId: "",
+  model: "",
+  hourlyRate: "",
+  duration: 1,
 });
 
 const deviceFormRules = {
-  brand: [{ required: true, message: '请输入品牌', trigger: 'blur' }],
-  model: [{ required: true, message: '请输入型号', trigger: 'blur' }],
-  memoryTotal: [{ required: true, message: '请输入总显存', trigger: 'blur' }],
-  architecture: [{ required: true, message: '请输入架构', trigger: 'blur' }],
-  status: [{ required: true, message: '请选择状态', trigger: 'change' }]
+  brand: [{ required: true, message: "请输入品牌", trigger: "blur" }],
+  model: [{ required: true, message: "请输入型号", trigger: "blur" }],
+  memoryTotal: [{ required: true, message: "请输入总显存", trigger: "blur" }],
+  architecture: [{ required: true, message: "请输入架构", trigger: "blur" }],
+  status: [{ required: true, message: "请选择状态", trigger: "change" }],
 };
 
 const devicePagination = ref({
   currentPage: 1,
   pageSize: 10,
-  total: 0
+  total: 0,
 });
 
 // 可租用设备相关
@@ -550,7 +666,7 @@ const rentableLoading = ref(false);
 const rentablePagination = ref({
   currentPage: 1,
   pageSize: 10,
-  total: 0
+  total: 0,
 });
 
 // 我的租用记录相关
@@ -562,7 +678,7 @@ const leaseDetail = ref({} as LeaseRecord);
 const myLeasePagination = ref({
   currentPage: 1,
   pageSize: 10,
-  total: 0
+  total: 0,
 });
 
 // 所有租用记录相关
@@ -572,58 +688,92 @@ const allLeaseLoading = ref(false);
 const allLeasePagination = ref({
   currentPage: 1,
   pageSize: 10,
-  total: 0
+  total: 0,
 });
 
 // 格式化日期时间
 const formatDateTime = (dateTime: string) => {
-  if (!dateTime) return '';
-  return new Date(dateTime).toLocaleString('zh-CN');
+  if (!dateTime) return "";
+  return new Date(dateTime).toLocaleString("zh-CN");
 };
 
 // 获取设备状态类型
 const getDeviceStatusType = (status: string) => {
   switch (status) {
-    case 'AVAILABLE': return 'success';
-    case 'LEASED': return 'warning';
-    case 'MAINTENANCE': return 'info';
-    case 'FAULT': return 'danger';
-    default: return 'info';
+    case "AVAILABLE":
+      return "success";
+    case "LEASED":
+      return "warning";
+    case "MAINTENANCE":
+      return "info";
+    case "FAULT":
+      return "danger";
+    default:
+      return "info";
   }
 };
 
 // 获取设备状态文本
 const getDeviceStatusText = (status: string) => {
   switch (status) {
-    case 'AVAILABLE': return '可用';
-    case 'LEASED': return '已租用';
-    case 'MAINTENANCE': return '维护中';
-    case 'FAULT': return '故障';
-    default: return status;
+    case "AVAILABLE":
+      return "可用";
+    case "LEASED":
+      return "已租用";
+    case "MAINTENANCE":
+      return "维护中";
+    case "FAULT":
+      return "故障";
+    default:
+      return status;
   }
 };
 
 // 获取租用状态类型
 const getLeaseStatusType = (status: string) => {
   switch (status) {
-    case 'ACTIVE': return 'success';
-    case 'COMPLETED': return 'info';
-    case 'CANCELLED': return 'warning';
-    default: return 'info';
+    case "ACTIVE":
+      return "success";
+    case "COMPLETED":
+      return "info";
+    case "CANCELLED":
+      return "warning";
+    default:
+      return "info";
   }
 };
 
 // 获取租用状态文本
 const getLeaseStatusText = (status: string) => {
   switch (status) {
-    case 'ACTIVE': return '进行中';
-    case 'COMPLETED': return '已完成';
-    case 'CANCELLED': return '已取消';
-    default: return status;
+    case "ACTIVE":
+      return "进行中";
+    case "COMPLETED":
+      return "已完成";
+    case "CANCELLED":
+      return "已取消";
+    default:
+      return status;
   }
 };
 
-// 获取GPU设备列表
+// 添加处理文件选择的方法
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    leaseFile.value = target.files[0];
+  } else {
+    leaseFile.value = null;
+  }
+};
+
+// 添加清除文件选择的方法
+const clearFileSelection = () => {
+  leaseFile.value = null;
+  if (fileInputRef.value) {
+    fileInputRef.value.value = "";
+  }
+};
 // 获取GPU设备列表
 const fetchGpuDevices = async () => {
   devicesLoading.value = true;
@@ -631,7 +781,7 @@ const fetchGpuDevices = async () => {
     // 构建参数对象，只添加有值的参数
     const params: any = {
       page: devicePagination.value.currentPage,
-      size: devicePagination.value.pageSize
+      size: devicePagination.value.pageSize,
     };
 
     // 只有当keyword有值时才添加到参数中
@@ -646,10 +796,13 @@ const fetchGpuDevices = async () => {
 
     const response = await getGpuDeviceList(params);
     gpuDevices.value = response.data.data?.list || response.data.list || [];
-    devicePagination.value.total = response.data.data?.total || response.data.total || gpuDevices.value.length;
+    devicePagination.value.total =
+      response.data.data?.total ||
+      response.data.total ||
+      gpuDevices.value.length;
   } catch (error) {
-    ElMessage.error('获取GPU设备列表失败');
-    console.error('获取GPU设备列表失败:', error);
+    ElMessage.error("获取GPU设备列表失败");
+    console.error("获取GPU设备列表失败:", error);
   } finally {
     devicesLoading.value = false;
   }
@@ -661,15 +814,19 @@ const fetchRentableDevices = async () => {
   try {
     const params = {
       page: rentablePagination.value.currentPage,
-      size: rentablePagination.value.pageSize
+      size: rentablePagination.value.pageSize,
     };
 
     const response = await getRentableGpuDevices(params);
-    rentableDevices.value = response.data.data?.list || response.data.list || [];
-    rentablePagination.value.total = response.data.data?.total || response.data.total || rentableDevices.value.length;
+    rentableDevices.value =
+      response.data.data?.list || response.data.list || [];
+    rentablePagination.value.total =
+      response.data.data?.total ||
+      response.data.total ||
+      rentableDevices.value.length;
   } catch (error) {
-    ElMessage.error('获取可租用GPU设备失败');
-    console.error('获取可租用GPU设备失败:', error);
+    ElMessage.error("获取可租用GPU设备失败");
+    console.error("获取可租用GPU设备失败:", error);
   } finally {
     rentableLoading.value = false;
   }
@@ -681,15 +838,18 @@ const fetchMyLeaseRecords = async () => {
   try {
     const data = {
       page: myLeasePagination.value.currentPage,
-      size: myLeasePagination.value.pageSize
+      size: myLeasePagination.value.pageSize,
     };
 
     const response = await getMyLeaseRecords(data);
     myLeaseRecords.value = response.data.data?.list || response.data.list || [];
-    myLeasePagination.value.total = response.data.data?.total || response.data.total || myLeaseRecords.value.length;
+    myLeasePagination.value.total =
+      response.data.data?.total ||
+      response.data.total ||
+      myLeaseRecords.value.length;
   } catch (error) {
-    ElMessage.error('获取我的租用记录失败');
-    console.error('获取我的租用记录失败:', error);
+    ElMessage.error("获取我的租用记录失败");
+    console.error("获取我的租用记录失败:", error);
   } finally {
     myLeaseLoading.value = false;
   }
@@ -701,15 +861,19 @@ const fetchAllLeaseRecords = async () => {
   try {
     const params = {
       page: allLeasePagination.value.currentPage,
-      size: allLeasePagination.value.pageSize
+      size: allLeasePagination.value.pageSize,
     };
 
     const response = await getAllLeaseRecords(params);
-    allLeaseRecords.value = response.data.data?.list || response.data.list || [];
-    allLeasePagination.value.total = response.data.data?.total || response.data.total || allLeaseRecords.value.length;
+    allLeaseRecords.value =
+      response.data.data?.list || response.data.list || [];
+    allLeasePagination.value.total =
+      response.data.data?.total ||
+      response.data.total ||
+      allLeaseRecords.value.length;
   } catch (error) {
-    ElMessage.error('获取所有租用记录失败');
-    console.error('获取所有租用记录失败:', error);
+    ElMessage.error("获取所有租用记录失败");
+    console.error("获取所有租用记录失败:", error);
   } finally {
     allLeaseLoading.value = false;
   }
@@ -718,16 +882,16 @@ const fetchAllLeaseRecords = async () => {
 // 处理标签页切换
 const handleTabChange = (tabName: string) => {
   switch (tabName) {
-    case 'devices':
+    case "devices":
       fetchGpuDevices();
       break;
-    case 'rentable':
+    case "rentable":
       fetchRentableDevices();
       break;
-    case 'myLease':
+    case "myLease":
       fetchMyLeaseRecords();
       break;
-    case 'allLease':
+    case "allLease":
       fetchAllLeaseRecords();
       break;
   }
@@ -735,7 +899,7 @@ const handleTabChange = (tabName: string) => {
 
 // 处理编辑设备
 const handleEditDevice = (row: GpuDevice) => {
-  editDeviceDialogTitle.value = '编辑GPU设备';
+  editDeviceDialogTitle.value = "编辑GPU设备";
   deviceForm.value = { ...row };
   editDeviceDialogVisible.value = true;
 };
@@ -746,7 +910,7 @@ const handleLeaseDevice = (row: GpuDevice) => {
     deviceId: row.deviceId,
     model: row.model,
     hourlyRate: row.hourlyRate,
-    duration: 1
+    duration: 1,
   };
   leaseDeviceDialogVisible.value = true;
 };
@@ -757,66 +921,90 @@ const confirmLeaseDevice = async () => {
 
   leaseLoading.value = true;
   try {
-    await leaseGpuDevice(leaseForm.value.deviceId);
-    ElMessage.success('设备租用成功');
+    // 准备数据
+    const data = {
+      duration: leaseForm.value.duration,
+    };
+
+    // 调用租用方法，传递文件和数据
+    await leaseGpuDevice(
+      leaseForm.value.deviceId,
+      leaseFile.value || undefined,
+      data
+    );
+    ElMessage.success("设备租用成功");
     leaseDeviceDialogVisible.value = false;
+
+    // 清除文件选择
+    clearFileSelection();
+
     // 刷新相关数据
     handleTabChange(activeTab.value);
   } catch (error) {
-    ElMessage.error('设备租用失败');
-    console.error('设备租用失败:', error);
+    ElMessage.error("设备租用失败");
+    console.error("设备租用失败:", error);
   } finally {
     leaseLoading.value = false;
   }
 };
 
+const handleLeaseDialogClose = () => {
+  clearFileSelection();
+  if (leaseFormRef.value) {
+    leaseFormRef.value.resetFields();
+  }
+};
 // 处理归还设备
 const handleReturnDevice = (row: LeaseRecord) => {
   ElMessageBox.confirm(
     `确定要归还设备 ${row.gpuDevice.deviceId} 吗？`,
-    '确认归还',
+    "确认归还",
     {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     }
-  ).then(async () => {
-    try {
-      await returnGpuDevice(row.gpuDeviceId);
-      ElMessage.success('设备归还成功');
-      // 刷新相关数据
-      handleTabChange(activeTab.value);
-    } catch (error) {
-      ElMessage.error('设备归还失败');
-      console.error('设备归还失败:', error);
-    }
-  }).catch(() => {
-    // 用户取消操作
-  });
+  )
+    .then(async () => {
+      try {
+        await returnGpuDevice(row.gpuDeviceId);
+        ElMessage.success("设备归还成功");
+        // 刷新相关数据
+        handleTabChange(activeTab.value);
+      } catch (error) {
+        ElMessage.error("设备归还失败");
+        console.error("设备归还失败:", error);
+      }
+    })
+    .catch(() => {
+      // 用户取消操作
+    });
 };
 
 // 处理删除设备
 const handleDeleteDevice = (row: GpuDevice) => {
   ElMessageBox.confirm(
     `确定要删除设备 ${row.deviceId} 吗？此操作不可恢复！`,
-    '确认删除',
+    "确认删除",
     {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     }
-  ).then(async () => {
-    try {
-      await deleteGpuDevice(row.deviceId);
-      ElMessage.success('设备删除成功');
-      fetchGpuDevices();
-    } catch (error) {
-      ElMessage.error('设备删除失败');
-      console.error('设备删除失败:', error);
-    }
-  }).catch(() => {
-    // 用户取消操作
-  });
+  )
+    .then(async () => {
+      try {
+        await deleteGpuDevice(row.deviceId);
+        ElMessage.success("设备删除成功");
+        fetchGpuDevices();
+      } catch (error) {
+        ElMessage.error("设备删除失败");
+        console.error("设备删除失败:", error);
+      }
+    })
+    .catch(() => {
+      // 用户取消操作
+    });
 };
 
 // 提交设备表单
@@ -836,16 +1024,16 @@ const submitDeviceForm = async () => {
           memoryType: deviceForm.value.memoryType,
           status: deviceForm.value.status,
           isRentable: deviceForm.value.isRentable,
-          hourlyRate: deviceForm.value.hourlyRate
+          hourlyRate: deviceForm.value.hourlyRate,
         };
 
         await updateGpuDevice(deviceForm.value.deviceId, data);
-        ElMessage.success('设备信息更新成功');
+        ElMessage.success("设备信息更新成功");
         editDeviceDialogVisible.value = false;
         fetchGpuDevices();
       } catch (error) {
-        ElMessage.error('设备信息更新失败');
-        console.error('设备信息更新失败:', error);
+        ElMessage.error("设备信息更新失败");
+        console.error("设备信息更新失败:", error);
       } finally {
         deviceFormLoading.value = false;
       }
@@ -946,5 +1134,9 @@ onMounted(() => {
 
 .dialog-footer {
   text-align: right;
+}
+
+.el-table--enable-row-transition .el-table__body td.el-table__cell{
+  background-color: #fff !important;
 }
 </style>
