@@ -1,11 +1,11 @@
 [[redirects]]
   from = "/api/*"
-  to = "http://5464ece7.r31.cpolar.top/api/:splat"
+  to = "http://2b6ac276.r31.cpolar.top/api/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/admin3/*"
-  to = "http://5464ece7.r31.cpolar.top/admin3/:splat"
+  to = "http://2b6ac276.r31.cpolar.top/admin3/:splat"
   status = 200
   force = true
