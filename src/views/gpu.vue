@@ -26,10 +26,9 @@
                   clearable
                   @change="fetchGpuDevices"
                 >
-                  <el-option label="可用" value="AVAILABLE" />
-                  <el-option label="已租用" value="LEASED" />
-                  <el-option label="维护中" value="MAINTENANCE" />
-                  <el-option label="故障" value="FAULT" />
+                  <el-option label="可用" value="ONLINE" />
+                  <el-option label="已租用" value="OFFLINE" />
+                  <el-option label="未知" value="UNKNOWN" />
                 </el-select>
                 <el-button type="primary" @click="fetchGpuDevices">刷新</el-button>
               </div>
@@ -625,16 +624,27 @@ const getLeaseStatusText = (status: string) => {
 };
 
 // 获取GPU设备列表
+// 获取GPU设备列表
 const fetchGpuDevices = async () => {
   devicesLoading.value = true;
   try {
-    const params = {
+    // 构建参数对象，只添加有值的参数
+    const params: any = {
       page: devicePagination.value.currentPage,
-      size: devicePagination.value.pageSize,
+      size: devicePagination.value.pageSize
     };
 
+    // 只有当keyword有值时才添加到参数中
+    if (deviceFilters.value.keyword) {
+      params.keyword = deviceFilters.value.keyword;
+    }
+
+    // 只有当status有值时才添加到参数中
+    if (deviceFilters.value.status) {
+      params.status = deviceFilters.value.status;
+    }
+
     const response = await getGpuDeviceList(params);
-    console.log(response);
     gpuDevices.value = response.data.data?.list || response.data.list || [];
     devicePagination.value.total = response.data.data?.total || response.data.total || gpuDevices.value.length;
   } catch (error) {
