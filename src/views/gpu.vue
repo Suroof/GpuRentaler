@@ -631,8 +631,6 @@ const fetchGpuDevices = async () => {
     const params = {
       page: devicePagination.value.currentPage,
       size: devicePagination.value.pageSize,
-      keyword: deviceFilters.value.keyword,
-      status: deviceFilters.value.status
     };
 
     const response = await getGpuDeviceList(params);
