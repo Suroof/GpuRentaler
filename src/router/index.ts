@@ -71,6 +71,17 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/gpu",
+        name: "gpu",
+        meta: {
+          title: "GPU管理",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard" */ "../views/gpu.vue"
+          ),
+      },
+      {
         path: "/wallet",
         name: "wallet",
         meta: {
