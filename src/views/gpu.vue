@@ -37,86 +37,63 @@
             </div>
           </template>
 
-          <el-table
-            :data="gpuDevices"
-            v-loading="devicesLoading"
-            style="width: 100%"
-            stripe
+          <a-table
+            :data-source="gpuDevices"
+            :loading="devicesLoading"
+            :pagination="false"
+            :scroll="{ x: 'max-content' }"
+            bordered
+            size="middle"
           >
-            <el-table-column
-              prop="deviceId"
-              label="设备ID"
-              width="120"
-            ></el-table-column>
-            <el-table-column
-              prop="brand"
-              label="品牌"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="model"
-              label="型号"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="memoryTotal" label="显存(MB)" width="100">
-              <template #default="scope">
-                {{ scope.row.memoryTotal }}
+            <a-table-column key="deviceId" title="设备ID" data-index="deviceId" :width="120" />
+            <a-table-column key="brand" title="品牌" data-index="brand" :width="100" />
+            <a-table-column key="model" title="型号" data-index="model" :width="120" />
+            <a-table-column key="memoryTotal" title="显存(MB)" data-index="memoryTotal" :width="100">
+              <template #default="{ text }">
+                {{ text }}
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="architecture"
-              label="架构"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="scope">
-                <el-tag :type="getDeviceStatusType(scope.row.status)">
-                  {{ getDeviceStatusText(scope.row.status) }}
-                </el-tag>
+            </a-table-column>
+            <a-table-column key="architecture" title="架构" data-index="architecture" :width="120" />
+            <a-table-column key="status" title="状态" :width="100">
+              <template #default="{ record }">
+                <a-tag :color="getDeviceStatusType(record.status)">
+                  {{ getDeviceStatusText(record.status) }}
+                </a-tag>
               </template>
-            </el-table-column>
-            <el-table-column prop="isRentable" label="可租用" width="80">
-              <template #default="scope">
-                <el-tag :type="scope.row.isRentable ? 'success' : 'danger'">
-                  {{ scope.row.isRentable ? "是" : "否" }}
-                </el-tag>
+            </a-table-column>
+            <a-table-column key="isRentable" title="可租用" :width="80">
+              <template #default="{ record }">
+                <a-tag :color="record.isRentable ? 'green' : 'red'">
+                  {{ record.isRentable ? "是" : "否" }}
+                </a-tag>
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="hourlyRate"
-              label="时价($)"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="totalRevenue"
-              label="总收入($)"
-              width="100"
-            ></el-table-column>
-            <el-table-column label="操作" width="200" fixed="right">
-              <template #default="scope">
-                <el-button size="small" @click="handleEditDevice(scope.row)"
-                  >编辑</el-button
-                >
-                <el-button
+            </a-table-column>
+            <a-table-column key="hourlyRate" title="时价($)" data-index="hourlyRate" :width="100" />
+            <a-table-column key="totalRevenue" title="总收入($)" data-index="totalRevenue" :width="100" />
+            <a-table-column key="actions" title="操作" :width="200" fixed="right">
+              <template #default="{ record }">
+                <a-button size="small" @click="handleEditDevice(record)" style="margin-right: 5px">
+                  编辑
+                </a-button>
+                <a-button
                   size="small"
                   type="primary"
-                  :disabled="
-                    !scope.row.isRentable || scope.row.status !== 'AVAILABLE'
-                  "
-                  @click="handleLeaseDevice(scope.row)"
+                  :disabled="!record.isRentable || record.status !== 'AVAILABLE'"
+                  @click="handleLeaseDevice(record)"
+                  style="margin-right: 5px"
                 >
                   租用
-                </el-button>
-                <el-button
+                </a-button>
+                <a-button
                   size="small"
-                  type="danger"
-                  @click="handleDeleteDevice(scope.row)"
+                  danger
+                  @click="handleDeleteDevice(record)"
                 >
                   删除
-                </el-button>
+                </a-button>
               </template>
-            </el-table-column>
-          </el-table>
+            </a-table-column>
+          </a-table>
 
           <div class="pagination-container">
             <el-pagination
@@ -144,54 +121,32 @@
             </div>
           </template>
 
-          <el-table
-            :data="rentableDevices"
-            v-loading="rentableLoading"
-            style="width: 100%"
-            stripe
+          <a-table
+            :data-source="rentableDevices"
+            :loading="rentableLoading"
+            :pagination="false"
+            :scroll="{ x: 'max-content' }"
+            bordered
+            size="middle"
           >
-            <el-table-column
-              prop="deviceId"
-              label="设备ID"
-              width="120"
-            ></el-table-column>
-            <el-table-column
-              prop="brand"
-              label="品牌"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="model"
-              label="型号"
-              width="120"
-            ></el-table-column>
-            <el-table-column
-              prop="memoryTotal"
-              label="显存(MB)"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="architecture"
-              label="架构"
-              width="120"
-            ></el-table-column>
-            <el-table-column
-              prop="hourlyRate"
-              label="时价($)"
-              width="100"
-            ></el-table-column>
-            <el-table-column label="操作" width="150" fixed="right">
-              <template #default="scope">
-                <el-button
+            <a-table-column key="deviceId" title="设备ID" data-index="deviceId" :width="120" />
+            <a-table-column key="brand" title="品牌" data-index="brand" :width="100" />
+            <a-table-column key="model" title="型号" data-index="model" :width="120" />
+            <a-table-column key="memoryTotal" title="显存(MB)" data-index="memoryTotal" :width="100" />
+            <a-table-column key="architecture" title="架构" data-index="architecture" :width="120" />
+            <a-table-column key="hourlyRate" title="时价($)" data-index="hourlyRate" :width="100" />
+            <a-table-column key="actions" title="操作" :width="150" fixed="right">
+              <template #default="{ record }">
+                <a-button
                   size="small"
                   type="primary"
-                  @click="handleLeaseDevice(scope.row)"
+                  @click="handleLeaseDevice(record)"
                 >
                   租用
-                </el-button>
+                </a-button>
               </template>
-            </el-table-column>
-          </el-table>
+            </a-table-column>
+          </a-table>
 
           <div class="pagination-container">
             <el-pagination
@@ -202,172 +157,6 @@
               layout="total, sizes, prev, pager, next, jumper"
               @size-change="handleRentableSizeChange"
               @current-change="handleRentableCurrentChange"
-            />
-          </div>
-        </el-card>
-      </el-tab-pane>
-
-      <!-- 我的租用记录 -->
-      <el-tab-pane label="我的租用记录" name="myLease">
-        <el-card class="gpu-card">
-          <template #header>
-            <div class="card-header">
-              <span>我的GPU租用记录</span>
-              <el-button type="primary" @click="fetchMyLeaseRecords"
-                >刷新</el-button
-              >
-            </div>
-          </template>
-
-          <el-table
-            :data="myLeaseRecords"
-            v-loading="myLeaseLoading"
-            style="width: 100%"
-            stripe
-          >
-            <el-table-column
-              prop="gpuDevice.deviceId"
-              label="设备ID"
-              width="120"
-            ></el-table-column>
-            <el-table-column
-              prop="gpuDevice.model"
-              label="型号"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="startTime" label="开始时间" width="180">
-              <template #default="scope">
-                {{ formatDateTime(scope.row.startTime) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="endTime" label="结束时间" width="180">
-              <template #default="scope">
-                {{ formatDateTime(scope.row.endTime) }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="actualDurationHours"
-              label="时长(小时)"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="hourlyRate"
-              label="时价($)"
-              width="100"
-            ></el-table-column>
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="scope">
-                <el-tag :type="getLeaseStatusType(scope.row.status)">
-                  {{ getLeaseStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="150" fixed="right">
-              <template #default="scope">
-                <el-button
-                  v-if="scope.row.status === 'ACTIVE'"
-                  size="small"
-                  type="danger"
-                  @click="handleReturnDevice(scope.row)"
-                >
-                  归还
-                </el-button>
-                <el-button
-                  v-else
-                  size="small"
-                  @click="showLeaseDetail(scope.row)"
-                >
-                  详情
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="myLeasePagination.currentPage"
-              v-model:page-size="myLeasePagination.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              :total="myLeasePagination.total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleMyLeaseSizeChange"
-              @current-change="handleMyLeaseCurrentChange"
-            />
-          </div>
-        </el-card>
-      </el-tab-pane>
-
-      <!-- 所有租用记录（管理员） -->
-      <el-tab-pane label="所有租用记录" name="allLease">
-        <el-card class="gpu-card">
-          <template #header>
-            <div class="card-header">
-              <span>所有GPU租用记录</span>
-              <el-button type="primary" @click="fetchAllLeaseRecords"
-                >刷新</el-button
-              >
-            </div>
-          </template>
-
-          <el-table
-            :data="allLeaseRecords"
-            v-loading="allLeaseLoading"
-            style="width: 100%"
-            stripe
-          >
-            <el-table-column
-              prop="userId"
-              label="用户ID"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="gpuDevice.deviceId"
-              label="设备ID"
-              width="120"
-            ></el-table-column>
-            <el-table-column
-              prop="gpuDevice.model"
-              label="型号"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="startTime" label="开始时间" width="180">
-              <template #default="scope">
-                {{ formatDateTime(scope.row.startTime) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="endTime" label="结束时间" width="180">
-              <template #default="scope">
-                {{ formatDateTime(scope.row.endTime) }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="actualDurationHours"
-              label="时长(小时)"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="hourlyRate"
-              label="时价($)"
-              width="100"
-            ></el-table-column>
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="scope">
-                <el-tag :type="getLeaseStatusType(scope.row.status)">
-                  {{ getLeaseStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="allLeasePagination.currentPage"
-              v-model:page-size="allLeasePagination.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              :total="allLeasePagination.total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleAllLeaseSizeChange"
-              @current-change="handleAllLeaseCurrentChange"
             />
           </div>
         </el-card>
@@ -567,6 +356,9 @@ import {
   getAllLeaseRecords,
 } from "../api/gpu";
 
+import { Table, Button, Tag } from 'ant-design-vue';
+import type { TableProps } from 'ant-design-vue';
+
 // 定义数据类型
 interface GpuDevice {
   deviceId: string;
@@ -701,15 +493,15 @@ const formatDateTime = (dateTime: string) => {
 const getDeviceStatusType = (status: string) => {
   switch (status) {
     case "AVAILABLE":
-      return "success";
+      return "green";
     case "LEASED":
-      return "warning";
+      return "orange";
     case "MAINTENANCE":
-      return "info";
+      return "blue";
     case "FAULT":
-      return "danger";
+      return "red";
     default:
-      return "info";
+      return "default";
   }
 };
 
@@ -733,13 +525,13 @@ const getDeviceStatusText = (status: string) => {
 const getLeaseStatusType = (status: string) => {
   switch (status) {
     case "ACTIVE":
-      return "success";
+      return "green";
     case "COMPLETED":
-      return "info";
+      return "blue";
     case "CANCELLED":
-      return "warning";
+      return "orange";
     default:
-      return "info";
+      return "default";
   }
 };
 
@@ -829,53 +621,6 @@ const fetchRentableDevices = async () => {
     console.error("获取可租用GPU设备失败:", error);
   } finally {
     rentableLoading.value = false;
-  }
-};
-
-// 获取我的租用记录
-const fetchMyLeaseRecords = async () => {
-  myLeaseLoading.value = true;
-  try {
-    const data = {
-      page: myLeasePagination.value.currentPage,
-      size: myLeasePagination.value.pageSize,
-    };
-
-    const response = await getMyLeaseRecords(data);
-    myLeaseRecords.value = response.data.data?.list || response.data.list || [];
-    myLeasePagination.value.total =
-      response.data.data?.total ||
-      response.data.total ||
-      myLeaseRecords.value.length;
-  } catch (error) {
-    ElMessage.error("获取我的租用记录失败");
-    console.error("获取我的租用记录失败:", error);
-  } finally {
-    myLeaseLoading.value = false;
-  }
-};
-
-// 获取所有租用记录
-const fetchAllLeaseRecords = async () => {
-  allLeaseLoading.value = true;
-  try {
-    const params = {
-      page: allLeasePagination.value.currentPage,
-      size: allLeasePagination.value.pageSize,
-    };
-
-    const response = await getAllLeaseRecords(params);
-    allLeaseRecords.value =
-      response.data.data?.list || response.data.list || [];
-    allLeasePagination.value.total =
-      response.data.data?.total ||
-      response.data.total ||
-      allLeaseRecords.value.length;
-  } catch (error) {
-    ElMessage.error("获取所有租用记录失败");
-    console.error("获取所有租用记录失败:", error);
-  } finally {
-    allLeaseLoading.value = false;
   }
 };
 
@@ -1134,9 +879,5 @@ onMounted(() => {
 
 .dialog-footer {
   text-align: right;
-}
-
-.el-table--enable-row-transition .el-table__body td.el-table__cell{
-  background-color: #fff !important;
 }
 </style>

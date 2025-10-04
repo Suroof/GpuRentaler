@@ -3,6 +3,8 @@ import {createPinia} from 'pinia';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import App from './App.vue';
 import router from './router';
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
 import './assets/css/theme.css';
@@ -13,6 +15,7 @@ import {useThemeStore} from "./store/theme";
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
+app.use(Antd)
 
 // 初始化主题
 const themeStore = useThemeStore();
