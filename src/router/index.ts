@@ -60,6 +60,24 @@ const routes: RouteRecordRaw[] = [
           import(/* webpackChunkName: "dashboard" */ "../views/log-list.vue"),
       },
       {
+        path: "/my/task",
+        name: "mytask",
+        meta: {
+          title: "我的任务",
+        },
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ "../views/mytask.vue"),
+      },
+      {
+        path: "/task",
+        name: "task",
+        meta: {
+          title: "任务管理",
+        },
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ "../views/task.vue"),
+      },
+      {
         path: "/storage",
         name: "storage",
         meta: {

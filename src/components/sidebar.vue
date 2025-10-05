@@ -9,6 +9,7 @@
         :active-text-color="sidebarActiveColor"
         unique-opened
         router
+        @select="handleSelect"
     >
       <template v-for="item in items">
         <template v-if="item.subs">
@@ -112,6 +113,14 @@ const onRoutes = computed(() => {
 });
 
 const sidebar = useSidebarStore();
+// 处理菜单选择事件
+const handleSelect = (index: string, indexPath: string[], item: MenuItemClicked) => {
+  console.log('菜单项被点击:', {
+    index,           // 被点击菜单项的index
+    indexPath,       // 菜单项的路径索引数组
+    item             // 菜单项对象
+  });
+};
 </script>
 
 <style scoped>

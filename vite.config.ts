@@ -84,11 +84,6 @@ export default defineConfig(({ command, mode }) => {
 
     // CSS配置
     css: {
-      preprocessorOptions: {
-        scss: {
-          api: 'modern-compiler', // 使用现代 Sass API
-        },
-      },
       postcss: {
         plugins: [],
       },
