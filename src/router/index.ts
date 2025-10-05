@@ -100,13 +100,33 @@ const routes: RouteRecordRaw[] = [
           ),
       },
       {
+        path: "/rent",
+        name: "rent",
+        meta: {
+          title: "租借GPU设备",
+        },
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard" */ "../views/rent.vue"
+          ),
+      },
+      {
         path: "/wallet",
         name: "wallet",
         meta: {
           title: "我的钱包",
         },
         component: () =>
-          import(/* webpackChunkName: "wallet" */ "../views/wallet.vue"),
+          import(/* webpackChunkName: "dashboard" */ "../views/wallet.vue"),
+      },
+      {
+        path: "/docker/image",
+        name: "docker",
+        meta: {
+          title: "镜像管理",
+        },
+        component: () =>
+          import(/* webpackChunkName: "dashboard" */ "../views/docker.vue"),
       },
       {
         path: "/server",

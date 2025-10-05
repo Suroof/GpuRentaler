@@ -2,8 +2,16 @@
   <div>
     <div class="container">
       <div class="handle-box">
-        <el-select v-model="query.typeNames" placeholder="操作类型" class="handle-select mr10" style="width: 150px"
-                   @change="handleSelectTypeInfoChange" filterable multiple clearable>
+        <el-select
+          v-model="query.typeNames"
+          placeholder="操作类型"
+          class="handle-select mr10"
+          style="width: 150px"
+          @change="handleSelectTypeInfoChange"
+          filterable
+          multiple
+          clearable
+        >
           <el-option
             v-for="item in typeInfo"
             :key="item.value"
@@ -11,15 +19,40 @@
             :value="item.value"
           />
         </el-select>
-        <el-button type="primary" :icon="Refresh" @click="handleRefresh">刷新日志</el-button>
-        <el-button type="danger" :icon="Delete" @click="handleCleanLogs" v-action:log:clean>清空日志</el-button>
+        <el-button type="primary" :icon="Refresh" @click="handleRefresh"
+          >刷新日志</el-button
+        >
+        <el-button
+          type="danger"
+          :icon="Delete"
+          @click="handleCleanLogs"
+          v-action:log:clean
+          >清空日志</el-button
+        >
       </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="user.username" label="用户" width="120"></el-table-column>
+      <el-table
+        :data="tableData"
+        border
+        class="table"
+        ref="multipleTable"
+        header-cell-class-name="table-header"
+      >
+        <el-table-column
+          prop="id"
+          label="ID"
+          width="55"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="user.username"
+          label="用户"
+          width="120"
+        ></el-table-column>
         <el-table-column prop="typeNameLabel" label="操作类型" width="120">
           <template #default="{ row }">
-            <span>{{ typeInfo?.find(t => t.value === row.typeName)?.label }}</span>
+            <span>{{
+              typeInfo?.find((t) => t.value === row.typeName)?.label
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="content" label="说明"></el-table-column>
@@ -40,15 +73,15 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
-import {ElMessage, ElMessageBox} from 'element-plus';
-import {Delete, Refresh} from '@element-plus/icons-vue';
-import {cleanLogs, getLogList} from "../api/log";
-import {getEventTypes} from "../api/common";
+import { reactive, ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Delete, Refresh } from "@element-plus/icons-vue";
+import { cleanLogs, getLogList } from "../api/log";
+import { getEventTypes } from "../api/common";
 
 interface TableItem {
   id: number;
-  user: { id: number; username: string; };
+  user: { id: number; username: string };
   typeName: string;
   typeNameLabel?: string;
   content: string;
@@ -63,7 +96,7 @@ interface TypeInfo {
 const query = reactive({
   typeNames: [],
   pageIndex: 1,
-  pageSize: 10
+  pageSize: 10,
 });
 
 const tableData = ref<TableItem[]>([]);
@@ -72,7 +105,7 @@ const typeInfo = ref<TypeInfo[]>();
 
 //获取类型
 const getTypeInfo = () => {
-  getEventTypes().then(res => {
+  getEventTypes().then((res) => {
     typeInfo.value = res.data;
   });
 };
@@ -82,8 +115,8 @@ const getData = () => {
   getLogList({
     page: query.pageIndex,
     size: query.pageSize,
-    typeNames: query.typeNames.join() || undefined
-  }).then(res => {
+    typeNames: query.typeNames.join() || undefined,
+  }).then((res) => {
     tableData.value = res.data.list;
     pageTotal.value = res.data.total;
   });
@@ -102,21 +135,21 @@ const handlePageChange = (val: number) => {
 // 刷新日志
 const handleRefresh = () => {
   getData();
-  ElMessage.success('刷新成功');
-}
+  ElMessage.success("刷新成功");
+};
 // 清空日志
 const handleCleanLogs = () => {
   // 二次确认删除
-  ElMessageBox.confirm('确定要清空所有日志吗？', '提示', {
-    type: 'warning'
-  }).then(() => {
-    cleanLogs().then(_ => {
-      ElMessage.success('清空成功');
-      getData();
-    });
+  ElMessageBox.confirm("确定要清空所有日志吗？", "提示", {
+    type: "warning",
   })
-    .catch(() => {
-    });
+    .then(() => {
+      cleanLogs().then((_) => {
+        ElMessage.success("清空成功");
+        getData();
+      });
+    })
+    .catch(() => {});
 };
 </script>
 

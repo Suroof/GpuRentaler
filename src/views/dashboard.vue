@@ -4,7 +4,7 @@
       <el-col :span="8">
         <el-card shadow="hover" class="mgb20" style="height: 252px">
           <div class="user-info">
-            <el-avatar :size="120" :src="userinfo.avatar"/>
+            <el-avatar :size="120" :src="userinfo.avatar" />
             <div class="user-info-cont">
               <div class="user-info-name">{{ userinfo.username }}</div>
               <div>hello world</div>
@@ -45,7 +45,7 @@
             <div class="stats-card stats-card-1">
               <div class="stats-icon">
                 <el-icon>
-                  <User/>
+                  <User />
                 </el-icon>
               </div>
               <div class="stats-content">
@@ -62,7 +62,7 @@
             <div class="stats-card stats-card-2">
               <div class="stats-icon">
                 <el-icon>
-                  <ChatDotRound/>
+                  <ChatDotRound />
                 </el-icon>
               </div>
               <div class="stats-content">
@@ -79,7 +79,7 @@
             <div class="stats-card stats-card-3">
               <div class="stats-icon">
                 <el-icon>
-                  <Goods/>
+                  <Goods />
                 </el-icon>
               </div>
               <div class="stats-content">
@@ -96,24 +96,33 @@
         <el-card shadow="hover" style="height: 403px">
           <template #header>
             <div class="clearfix">
-              <span>最新操作日志</span>
-              <el-button style="float: right; padding: 3px 0" text @click="fetchLogList">刷新</el-button>
+              <span>操作日志</span>
+              <el-button
+                style="float: right; padding: 3px 0"
+                text
+                @click="fetchLogList"
+                >刷新</el-button
+              >
             </div>
           </template>
 
           <el-table :show-header="false" :data="logList" style="width: 100%">
             <el-table-column width="40">
               <template #default="scope">
-                <el-checkbox v-model="scope.row.status" disabled></el-checkbox>
               </template>
             </el-table-column>
             <el-table-column>
               <template #default="scope">
                 <div class="todo-item">
-                  <span style="font-weight: 500; margin-right: 8px">[{{ scope.row.user?.username || '未知用户' }}]</span>
+                  <span style="font-weight: 500; margin-right: 8px"
+                    >{{ scope.row.id }}</span
+                  >
+                  <span style="font-weight: 500; margin-right: 8px"
+                    >[{{ scope.row.user?.username || "未知用户" }}]</span
+                  >
                   {{ scope.row.content }}
                 </div>
-                <div class="todo-item" style="font-size: 12px; color: #999;">
+                <div class="todo-item" style="font-size: 12px; color: #999">
                   {{ new Date(scope.row.occurredOn).toLocaleString() }}
                 </div>
               </template>
@@ -154,22 +163,22 @@
 </template>
 
 <script setup lang="ts" name="dashboard">
-import { reactive, computed, onMounted, ref } from 'vue'
-import { use } from 'echarts/core'
+import { reactive, computed, onMounted, ref } from "vue";
+import { use } from "echarts/core";
 import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
-} from 'echarts/components'
-import { BarChart, LineChart, PieChart } from 'echarts/charts'
-import { CanvasRenderer } from 'echarts/renderers'
-import VChart, { THEME_KEY } from 'vue-echarts'
-import { provide } from 'vue'
-import { useBasicStore } from "../store/basic"
-import { getServerList } from "../api/server"
-import { getGpuDeviceList } from "../api/gpu"
-import { getLogList } from "../api/log"
+  GridComponent,
+} from "echarts/components";
+import { BarChart, LineChart, PieChart } from "echarts/charts";
+import { CanvasRenderer } from "echarts/renderers";
+import VChart, { THEME_KEY } from "vue-echarts";
+import { provide } from "vue";
+import { useBasicStore } from "../store/basic";
+import { getServerList } from "../api/server";
+import { getGpuDeviceList } from "../api/gpu";
+import { getLogList } from "../api/log";
 
 // 注册ECharts组件
 use([
@@ -180,367 +189,414 @@ use([
   BarChart,
   LineChart,
   PieChart,
-  CanvasRenderer
-])
+  CanvasRenderer,
+]);
 
-const basicStore = useBasicStore()
-const userinfo = basicStore.userinfo
+const basicStore = useBasicStore();
+const userinfo = basicStore.userinfo;
 
 // 主题检测
-const isDarkMode = ref(false)
+const isDarkMode = ref(false);
 
 const checkTheme = () => {
-  isDarkMode.value = document.documentElement.classList.contains('dark') ||
-                    document.documentElement.getAttribute('data-theme') === 'dark' ||
-                    window.matchMedia('(prefers-color-scheme: dark)').matches
-}
+  isDarkMode.value =
+    document.documentElement.classList.contains("dark") ||
+    document.documentElement.getAttribute("data-theme") === "dark" ||
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+};
 
 // 服务器数据
 const serverData = ref({
   onlineCount: [5, 8, 12, 15, 18, 22, 25],
   offlineCount: [2, 3, 5, 4, 3, 2, 1],
-  dates: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-})
+  dates: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+});
 
 // GPU品牌分布数据
 const gpuBrandData = ref([
   {
     value: 40,
-    name: 'NVIDIA',
+    name: "NVIDIA",
     itemStyle: {
-      color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
-    }
+      color: isDarkMode.value ? "#60a5fa" : "#7dd3fc",
+    },
   },
   {
     value: 25,
-    name: 'AMD',
+    name: "AMD",
     itemStyle: {
-      color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
-    }
+      color: isDarkMode.value ? "#3b82f6" : "#3b82f6",
+    },
   },
   {
     value: 15,
-    name: 'Intel',
+    name: "Intel",
     itemStyle: {
-      color: isDarkMode.value ? '#10b981' : '#34d399'
-    }
-  }
-])
+      color: isDarkMode.value ? "#10b981" : "#34d399",
+    },
+  },
+]);
 
 // 获取服务器统计数据
 const fetchServerStats = async () => {
   try {
-    const response = await getServerList()
-    const servers = response.data.list || []
+    const response = await getServerList();
+    const servers = response.data.list || [];
 
     // 按日期统计服务器状态（这里简化处理）
     // 实际应用中应该从后端获取统计数据
-    const dates = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-    const onlineCount = [0, 0, 0, 0, 0, 0, 0]
-    const offlineCount = [0, 0, 0, 0, 0, 0, 0]
+    const dates = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+    const onlineCount = [0, 0, 0, 0, 0, 0, 0];
+    const offlineCount = [0, 0, 0, 0, 0, 0, 0];
 
     // 根据当前服务器状态填充最近一天的数据
     servers.forEach((server: any) => {
-      if (server.status === 'ONLINE') {
-        onlineCount[6]++
+      if (server.status === "ONLINE") {
+        onlineCount[6]++;
       } else {
-        offlineCount[6]++
+        offlineCount[6]++;
       }
-    })
+    });
 
     // 简化模拟历史数据
     for (let i = 0; i < 6; i++) {
-      onlineCount[i] = Math.max(0, onlineCount[6] - (6 - i) * 2)
-      offlineCount[i] = Math.max(0, offlineCount[6] - (6 - i) * 1)
+      onlineCount[i] = Math.max(0, onlineCount[6] - (6 - i) * 2);
+      offlineCount[i] = Math.max(0, offlineCount[6] - (6 - i) * 1);
     }
 
     serverData.value = {
       onlineCount,
       offlineCount,
-      dates
-    }
+      dates,
+    };
   } catch (error) {
-    console.error("获取服务器统计数据失败:", error)
+    console.error("获取服务器统计数据失败:", error);
   }
-}
+};
 
 // 获取GPU统计数据
 const fetchGpuStats = async () => {
   try {
-    const response = await getGpuDeviceList({ page: 1, size: 1000 })
-    const gpuDevices = response.data.data?.list || response.data.list || []
+    const response = await getGpuDeviceList({ page: 1, size: 1000 });
+    const gpuDevices = response.data.data?.list || response.data.list || [];
 
     // 统计各品牌GPU数量
     const brandCount: { [key: string]: number } = {
-      'NVIDIA': 0,
-      'AMD': 0,
-      'Intel': 0
-    }
+      NVIDIA: 0,
+      AMD: 0,
+      Intel: 0,
+    };
 
     gpuDevices.forEach((device: any) => {
       if (device.brand && brandCount.hasOwnProperty(device.brand)) {
-        brandCount[device.brand]++
+        brandCount[device.brand]++;
       } else if (device.brand) {
         // 如果是其他品牌，默认归类到Intel
-        brandCount['Intel']++
+        brandCount["Intel"]++;
       }
-    })
+    });
 
     gpuBrandData.value = [
       {
-        value: brandCount['NVIDIA'],
-        name: 'NVIDIA',
+        value: brandCount["NVIDIA"],
+        name: "NVIDIA",
         itemStyle: {
-          color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
-        }
+          color: isDarkMode.value ? "#60a5fa" : "#7dd3fc",
+        },
       },
       {
-        value: brandCount['AMD'],
-        name: 'AMD',
+        value: brandCount["AMD"],
+        name: "AMD",
         itemStyle: {
-          color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
-        }
+          color: isDarkMode.value ? "#3b82f6" : "#3b82f6",
+        },
       },
       {
-        value: brandCount['Intel'],
-        name: 'Intel',
+        value: brandCount["Intel"],
+        name: "Intel",
         itemStyle: {
-          color: isDarkMode.value ? '#10b981' : '#34d399'
-        }
-      }
-    ]
+          color: isDarkMode.value ? "#10b981" : "#34d399",
+        },
+      },
+    ];
   } catch (error) {
-    console.error("获取GPU统计数据失败:", error)
+    console.error("获取GPU统计数据失败:", error);
   }
-}
+};
 
-const todoList = ref([])
+let logList = ref([])
 const fetchLogs = async () => {
   try {
     const response = await getLogList({ page: 1, size: 6 })
     const logs = response.data.list || []
-
-    // 将日志数据转换为待办事项列表的格式
-    todoList.value = logs.map((log: any) => ({
-      title: `[${log.user?.username || '未知用户'}] ${log.content}`,
-      status: false, // 日志没有完成状态，所以默认为false
-      time: log.occurredOn // 保留时间信息用于显示
+    console.log('logs',logs)
+    // 解析 eventBody 字段并转换为表格显示格式
+    logList.value = logs.map((log: any) => ({
+      id: log.id,
+      content: log.content,
+      occurredOn: log.occurredOn,
+      user: log.user,
+      eventBody: log.eventBody ? JSON.parse(log.eventBody) : null
     }))
+    console.log('123',logList)
   } catch (error) {
     console.error("获取操作日志失败:", error)
   }
 }
 
 onMounted(() => {
-  checkTheme()
-  fetchServerStats()
-  fetchGpuStats()
-  fetchLogs()
+  checkTheme();
+  fetchServerStats();
+  fetchGpuStats();
+  fetchLogs();
   // 监听主题变化
-  const observer = new MutationObserver(checkTheme)
+  const observer = new MutationObserver(checkTheme);
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['class', 'data-theme']
-  })
+    attributeFilter: ["class", "data-theme"],
+  });
 
   // 监听系统主题变化
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkTheme)
-})
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", checkTheme);
+});
 
 // 当前主题
-const currentTheme = computed(() => isDarkMode.value ? 'dark' : 'light')
+const currentTheme = computed(() => (isDarkMode.value ? "dark" : "light"));
 
 // 提供主题给ECharts
-provide(THEME_KEY, currentTheme)
+provide(THEME_KEY, currentTheme);
 
 // 面积图配置 (左侧图表)
 const areaChartOption = computed(() => ({
-  backgroundColor: 'transparent',
+  backgroundColor: "transparent",
   title: {
-    show: false
+    show: false,
   },
   tooltip: {
-    trigger: 'axis',
-    backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-    borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
+    trigger: "axis",
+    backgroundColor: isDarkMode.value
+      ? "rgba(30, 41, 59, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    borderColor: isDarkMode.value
+      ? "rgba(167, 139, 250, 0.2)"
+      : "rgba(196, 181, 253, 0.3)",
     borderWidth: 1,
     borderRadius: 8,
     textStyle: {
-      color: isDarkMode.value ? '#e2e8f0' : '#334155',
-      fontSize: 12
+      color: isDarkMode.value ? "#e2e8f0" : "#334155",
+      fontSize: 12,
     },
-    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
+    extraCssText:
+      "box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);",
   },
   legend: {
-    data: ['在线服务器', '离线服务器'],
-    bottom: '10%',
-    left: 'center',
+    data: ["在线服务器", "离线服务器"],
+    bottom: "10%",
+    left: "center",
     itemGap: 20,
     textStyle: {
-      color: isDarkMode.value ? '#cbd5e1' : '#64748b',
-      fontSize: 12
+      color: isDarkMode.value ? "#cbd5e1" : "#64748b",
+      fontSize: 12,
     },
     itemWidth: 12,
-    itemHeight: 12
+    itemHeight: 12,
   },
   grid: {
-    left: '5%',
-    right: '5%',
-    bottom: '20%',
-    top: '10%',
-    containLabel: true
+    left: "5%",
+    right: "5%",
+    bottom: "20%",
+    top: "10%",
+    containLabel: true,
   },
   xAxis: {
-    type: 'category',
+    type: "category",
     data: serverData.value.dates,
     boundaryGap: false,
     axisTick: {
-      show: false
+      show: false,
     },
     axisLine: {
-      show: false
+      show: false,
     },
     axisLabel: {
-      color: isDarkMode.value ? '#94a3b8' : '#94a3b8',
-      fontSize: 11
-    }
+      color: isDarkMode.value ? "#94a3b8" : "#94a3b8",
+      fontSize: 11,
+    },
   },
   yAxis: {
-    type: 'value',
+    type: "value",
     axisLine: {
-      show: false
+      show: false,
     },
     axisTick: {
-      show: false
+      show: false,
     },
     splitLine: {
-      show: false
+      show: false,
     },
     axisLabel: {
-      color: isDarkMode.value ? '#94a3b8' : '#94a3b8',
-      fontSize: 11
-    }
+      color: isDarkMode.value ? "#94a3b8" : "#94a3b8",
+      fontSize: 11,
+    },
   },
   series: [
     {
-      name: '在线服务器',
-      type: 'line',
+      name: "在线服务器",
+      type: "line",
       data: serverData.value.onlineCount,
       smooth: true,
-      symbol: 'none',
+      symbol: "none",
       lineStyle: {
-        width: 0
+        width: 0,
       },
       areaStyle: {
         color: {
-          type: 'linear',
+          type: "linear",
           x: 0,
           y: 0,
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.6)' : 'rgba(59, 130, 246, 0.6)' },
-            { offset: 0.5, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.4)' },
-            { offset: 1, color: isDarkMode.value ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)' }
-          ]
-        }
+            {
+              offset: 0,
+              color: isDarkMode.value
+                ? "rgba(59, 130, 246, 0.6)"
+                : "rgba(59, 130, 246, 0.6)",
+            },
+            {
+              offset: 0.5,
+              color: isDarkMode.value
+                ? "rgba(59, 130, 246, 0.4)"
+                : "rgba(59, 130, 246, 0.4)",
+            },
+            {
+              offset: 1,
+              color: isDarkMode.value
+                ? "rgba(59, 130, 246, 0.1)"
+                : "rgba(59, 130, 246, 0.1)",
+            },
+          ],
+        },
       },
-      stack: 'total'
+      stack: "total",
     },
     {
-      name: '离线服务器',
-      type: 'line',
+      name: "离线服务器",
+      type: "line",
       data: serverData.value.offlineCount,
       smooth: true,
-      symbol: 'none',
+      symbol: "none",
       lineStyle: {
-        width: 0
+        width: 0,
       },
       areaStyle: {
         color: {
-          type: 'linear',
+          type: "linear",
           x: 0,
           y: 0,
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.7)' : 'rgba(139, 92, 246, 0.7)' },
-            { offset: 0.5, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.5)' : 'rgba(139, 92, 246, 0.5)' },
-            { offset: 1, color: isDarkMode.value ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)' }
-          ]
-        }
+            {
+              offset: 0,
+              color: isDarkMode.value
+                ? "rgba(139, 92, 246, 0.7)"
+                : "rgba(139, 92, 246, 0.7)",
+            },
+            {
+              offset: 0.5,
+              color: isDarkMode.value
+                ? "rgba(139, 92, 246, 0.5)"
+                : "rgba(139, 92, 246, 0.5)",
+            },
+            {
+              offset: 1,
+              color: isDarkMode.value
+                ? "rgba(139, 92, 246, 0.1)"
+                : "rgba(139, 92, 246, 0.1)",
+            },
+          ],
+        },
       },
-      stack: 'total'
-    }
-  ]
-}))
+      stack: "total",
+    },
+  ],
+}));
 
 // 环形图配置 (右侧图表)
 const donutChartOption = computed(() => ({
-  backgroundColor: 'transparent',
+  backgroundColor: "transparent",
   title: {
-    show: false
+    show: false,
   },
   tooltip: {
-    trigger: 'item',
-    backgroundColor: isDarkMode.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-    borderColor: isDarkMode.value ? 'rgba(167, 139, 250, 0.2)' : 'rgba(196, 181, 253, 0.3)',
+    trigger: "item",
+    backgroundColor: isDarkMode.value
+      ? "rgba(30, 41, 59, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    borderColor: isDarkMode.value
+      ? "rgba(167, 139, 250, 0.2)"
+      : "rgba(196, 181, 253, 0.3)",
     borderWidth: 1,
     borderRadius: 8,
     textStyle: {
-      color: isDarkMode.value ? '#e2e8f0' : '#334155',
-      fontSize: 12
+      color: isDarkMode.value ? "#e2e8f0" : "#334155",
+      fontSize: 12,
     },
-    extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);',
-    formatter: '{a} <br/>{b}: {c} ({d}%)'
+    extraCssText:
+      "box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);",
+    formatter: "{a} <br/>{b}: {c} ({d}%)",
   },
   legend: {
-    orient: 'vertical',
-    left: '60%',
-    top: '5%',
+    orient: "vertical",
+    left: "60%",
+    top: "5%",
     itemGap: 15,
     textStyle: {
-      color: isDarkMode.value ? '#cbd5e1' : '#64748b',
-      fontSize: 12
+      color: isDarkMode.value ? "#cbd5e1" : "#64748b",
+      fontSize: 12,
     },
-    formatter: function(name: string) {
+    formatter: function (name: string) {
       const data: { [key: string]: string } = {
-        'NVIDIA': '(台)',
-        'AMD': '(台)',
-        'Intel': '(台)'
+        NVIDIA: "(台)",
+        AMD: "(台)",
+        Intel: "(台)",
       };
-      return name + ' ' + (data[name] || '');
-    }
+      return name + " " + (data[name] || "");
+    },
   },
   series: [
     {
-      name: 'GPU品牌分布',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      center: ['35%', '50%'],
+      name: "GPU品牌分布",
+      type: "pie",
+      radius: ["40%", "70%"],
+      center: ["35%", "50%"],
       avoidLabelOverlap: false,
       label: {
-        show: false
+        show: false,
       },
       emphasis: {
         itemStyle: {
           borderWidth: 8,
-          borderColor: isDarkMode.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)'
+          borderColor: isDarkMode.value
+            ? "rgba(255, 255, 255, 0.1)"
+            : "rgba(255, 255, 255, 0.3)",
         },
         scale: true,
         scaleSize: 15,
         label: {
-          show: false
-        }
+          show: false,
+        },
       },
       labelLine: {
-        show: false
+        show: false,
       },
-      data: gpuBrandData.value
-    }
-  ]
-}))
-
+      data: gpuBrandData.value,
+    },
+  ],
+}));
 </script>
 
 <style scoped>
@@ -569,9 +625,7 @@ const donutChartOption = computed(() => ({
 .stats-card:hover {
   transform: translateY(-8px);
   border-bottom: 10px solid rgba(226, 226, 226, 0.8);
-  box-shadow:
-    0 12px 24px rgba(0, 0, 0, 0.15),
-    0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .stats-icon {
@@ -608,7 +662,11 @@ const donutChartOption = computed(() => ({
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 4px;
-  background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+  background: linear-gradient(
+    135deg,
+    var(--text-primary),
+    var(--accent-primary)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -732,13 +790,13 @@ const donutChartOption = computed(() => ({
 }
 
 .mgb20 {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .todo-item {
@@ -774,7 +832,7 @@ const donutChartOption = computed(() => ({
 }
 
 .chart-header h3::before {
-  content: '';
+  content: "";
   width: 3px;
   height: 14px;
   background: #e5e7eb;
