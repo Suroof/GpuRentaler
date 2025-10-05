@@ -26,16 +26,16 @@
         <el-card shadow="hover" style="height: 252px">
           <template #header>
             <div class="clearfix">
-              <span>语言详情</span>
+              <span>GPU处理器数量</span>
             </div>
           </template>
-          Vue
+          > 16
           <el-progress :percentage="79.4" color="#42b983"></el-progress>
-          TypeScript
+          < 8
           <el-progress :percentage="14" color="#f1e05a"></el-progress>
-          CSS
+          < 4
           <el-progress :percentage="5.6"></el-progress>
-          HTML
+          < 2
           <el-progress :percentage="1" color="#f56c6c"></el-progress>
         </el-card>
       </el-col>
@@ -96,26 +96,25 @@
         <el-card shadow="hover" style="height: 403px">
           <template #header>
             <div class="clearfix">
-              <span>待办事项</span>
-              <el-button style="float: right; padding: 3px 0" text>添加</el-button>
+              <span>最新操作日志</span>
+              <el-button style="float: right; padding: 3px 0" text @click="fetchLogList">刷新</el-button>
             </div>
           </template>
 
-          <el-table :show-header="false" :data="todoList" style="width: 100%">
+          <el-table :show-header="false" :data="logList" style="width: 100%">
             <el-table-column width="40">
               <template #default="scope">
-                <el-checkbox v-model="scope.row.status"></el-checkbox>
+                <el-checkbox v-model="scope.row.status" disabled></el-checkbox>
               </template>
             </el-table-column>
             <el-table-column>
               <template #default="scope">
-                <div
-                    class="todo-item"
-                    :class="{
-										'todo-item-del': scope.row.status
-									}"
-                >
-                  {{ scope.row.title }}
+                <div class="todo-item">
+                  <span style="font-weight: 500; margin-right: 8px">[{{ scope.row.user?.username || '未知用户' }}]</span>
+                  {{ scope.row.content }}
+                </div>
+                <div class="todo-item" style="font-size: 12px; color: #999;">
+                  {{ new Date(scope.row.occurredOn).toLocaleString() }}
                 </div>
               </template>
             </el-table-column>
@@ -127,7 +126,7 @@
       <el-col :span="12">
         <el-card shadow="hover" class="chart-card">
           <div class="chart-header">
-            <h3>趋势分析图</h3>
+            <h3>服务器状态统计</h3>
           </div>
           <v-chart
             class="chart"
@@ -140,7 +139,7 @@
       <el-col :span="12">
         <el-card shadow="hover" class="chart-card">
           <div class="chart-header">
-            <h3>加载速度</h3>
+            <h3>GPU品牌分布</h3>
           </div>
           <v-chart
             class="chart"
@@ -168,6 +167,9 @@ import { CanvasRenderer } from 'echarts/renderers'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { provide } from 'vue'
 import { useBasicStore } from "../store/basic"
+import { getServerList } from "../api/server"
+import { getGpuDeviceList } from "../api/gpu"
+import { getLogList } from "../api/log"
 
 // 注册ECharts组件
 use([
@@ -193,8 +195,147 @@ const checkTheme = () => {
                     window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
+// 服务器数据
+const serverData = ref({
+  onlineCount: [5, 8, 12, 15, 18, 22, 25],
+  offlineCount: [2, 3, 5, 4, 3, 2, 1],
+  dates: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+})
+
+// GPU品牌分布数据
+const gpuBrandData = ref([
+  {
+    value: 40,
+    name: 'NVIDIA',
+    itemStyle: {
+      color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
+    }
+  },
+  {
+    value: 25,
+    name: 'AMD',
+    itemStyle: {
+      color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
+    }
+  },
+  {
+    value: 15,
+    name: 'Intel',
+    itemStyle: {
+      color: isDarkMode.value ? '#10b981' : '#34d399'
+    }
+  }
+])
+
+// 获取服务器统计数据
+const fetchServerStats = async () => {
+  try {
+    const response = await getServerList()
+    const servers = response.data.list || []
+
+    // 按日期统计服务器状态（这里简化处理）
+    // 实际应用中应该从后端获取统计数据
+    const dates = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    const onlineCount = [0, 0, 0, 0, 0, 0, 0]
+    const offlineCount = [0, 0, 0, 0, 0, 0, 0]
+
+    // 根据当前服务器状态填充最近一天的数据
+    servers.forEach((server: any) => {
+      if (server.status === 'ONLINE') {
+        onlineCount[6]++
+      } else {
+        offlineCount[6]++
+      }
+    })
+
+    // 简化模拟历史数据
+    for (let i = 0; i < 6; i++) {
+      onlineCount[i] = Math.max(0, onlineCount[6] - (6 - i) * 2)
+      offlineCount[i] = Math.max(0, offlineCount[6] - (6 - i) * 1)
+    }
+
+    serverData.value = {
+      onlineCount,
+      offlineCount,
+      dates
+    }
+  } catch (error) {
+    console.error("获取服务器统计数据失败:", error)
+  }
+}
+
+// 获取GPU统计数据
+const fetchGpuStats = async () => {
+  try {
+    const response = await getGpuDeviceList({ page: 1, size: 1000 })
+    const gpuDevices = response.data.data?.list || response.data.list || []
+
+    // 统计各品牌GPU数量
+    const brandCount: { [key: string]: number } = {
+      'NVIDIA': 0,
+      'AMD': 0,
+      'Intel': 0
+    }
+
+    gpuDevices.forEach((device: any) => {
+      if (device.brand && brandCount.hasOwnProperty(device.brand)) {
+        brandCount[device.brand]++
+      } else if (device.brand) {
+        // 如果是其他品牌，默认归类到Intel
+        brandCount['Intel']++
+      }
+    })
+
+    gpuBrandData.value = [
+      {
+        value: brandCount['NVIDIA'],
+        name: 'NVIDIA',
+        itemStyle: {
+          color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
+        }
+      },
+      {
+        value: brandCount['AMD'],
+        name: 'AMD',
+        itemStyle: {
+          color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
+        }
+      },
+      {
+        value: brandCount['Intel'],
+        name: 'Intel',
+        itemStyle: {
+          color: isDarkMode.value ? '#10b981' : '#34d399'
+        }
+      }
+    ]
+  } catch (error) {
+    console.error("获取GPU统计数据失败:", error)
+  }
+}
+
+const todoList = ref([])
+const fetchLogs = async () => {
+  try {
+    const response = await getLogList({ page: 1, size: 6 })
+    const logs = response.data.list || []
+
+    // 将日志数据转换为待办事项列表的格式
+    todoList.value = logs.map((log: any) => ({
+      title: `[${log.user?.username || '未知用户'}] ${log.content}`,
+      status: false, // 日志没有完成状态，所以默认为false
+      time: log.occurredOn // 保留时间信息用于显示
+    }))
+  } catch (error) {
+    console.error("获取操作日志失败:", error)
+  }
+}
+
 onMounted(() => {
   checkTheme()
+  fetchServerStats()
+  fetchGpuStats()
+  fetchLogs()
   // 监听主题变化
   const observer = new MutationObserver(checkTheme)
   observer.observe(document.documentElement, {
@@ -231,7 +372,7 @@ const areaChartOption = computed(() => ({
     extraCssText: 'box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);'
   },
   legend: {
-    data: ['Debit', 'Credit'],
+    data: ['在线服务器', '离线服务器'],
     bottom: '10%',
     left: 'center',
     itemGap: 20,
@@ -251,7 +392,7 @@ const areaChartOption = computed(() => ({
   },
   xAxis: {
     type: 'category',
-    data: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    data: serverData.value.dates,
     boundaryGap: false,
     axisTick: {
       show: false
@@ -282,9 +423,9 @@ const areaChartOption = computed(() => ({
   },
   series: [
     {
-      name: 'Debit',
+      name: '在线服务器',
       type: 'line',
-      data: [20, 35, 25, 60, 45, 75, 85],
+      data: serverData.value.onlineCount,
       smooth: true,
       symbol: 'none',
       lineStyle: {
@@ -307,9 +448,9 @@ const areaChartOption = computed(() => ({
       stack: 'total'
     },
     {
-      name: 'Credit',
+      name: '离线服务器',
       type: 'line',
-      data: [30, 25, 40, 35, 55, 45, 65],
+      data: serverData.value.offlineCount,
       smooth: true,
       symbol: 'none',
       lineStyle: {
@@ -364,16 +505,16 @@ const donutChartOption = computed(() => ({
     },
     formatter: function(name: string) {
       const data: { [key: string]: string } = {
-        'Vuestic 2.0': '(3 ms)',
-        'Vuestic 1.0': '(14 ms)',
-        'Random Vue.js Theme': '(40 ms)'
+        'NVIDIA': '(台)',
+        'AMD': '(台)',
+        'Intel': '(台)'
       };
       return name + ' ' + (data[name] || '');
     }
   },
   series: [
     {
-      name: 'Loading Speed',
+      name: 'GPU品牌分布',
       type: 'pie',
       radius: ['40%', '70%'],
       center: ['35%', '50%'],
@@ -395,59 +536,11 @@ const donutChartOption = computed(() => ({
       labelLine: {
         show: false
       },
-      data: [
-        {
-          value: 60,
-          name: 'Vuestic 2.0',
-          itemStyle: {
-            color: isDarkMode.value ? '#60a5fa' : '#7dd3fc'
-          }
-        },
-        {
-          value: 25,
-          name: 'Vuestic 1.0',
-          itemStyle: {
-            color: isDarkMode.value ? '#3b82f6' : '#3b82f6'
-          }
-        },
-        {
-          value: 15,
-          name: 'Random Vue.js Theme',
-          itemStyle: {
-            color: isDarkMode.value ? '#10b981' : '#34d399'
-          }
-        }
-      ]
+      data: gpuBrandData.value
     }
   ]
 }))
 
-const todoList = reactive([
-  {
-    title: '今天要修复100个bug',
-    status: false
-  },
-  {
-    title: '今天要修复100个bug',
-    status: false
-  },
-  {
-    title: '今天要写100行代码加几个bug吧',
-    status: false
-  },
-  {
-    title: '今天要修复100个bug',
-    status: false
-  },
-  {
-    title: '今天要修复100个bug',
-    status: true
-  },
-  {
-    title: '今天要写100行代码加几个bug吧',
-    status: true
-  }
-])
 </script>
 
 <style scoped>

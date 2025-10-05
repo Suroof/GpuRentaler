@@ -229,6 +229,7 @@ const viewTaskLog = async (row: Task) => {
 
     const params = {
       taskId: row.id,
+      logNum: 10
     };
     console.log("params:", params);
     const response = await getTaskLog(params);
