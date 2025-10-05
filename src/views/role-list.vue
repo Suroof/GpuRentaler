@@ -5,7 +5,7 @@
         <el-col :xl="4" :lg="4" style="border-right: 1px solid #dcdfe6">
           <div style="margin-bottom: 24px; font-weight: 700">角色管理</div>
           <el-divider></el-divider>
-          <el-button @click="addVisible = true;Object.assign(form, new Role());" type="primary" link
+          <el-button @click="addVisible = true;Object.assign(form, new Role());" type="primary" link class="button-add"
                      v-action:role:create>新建角色
           </el-button>
           <div style="margin-top: 16px">
@@ -51,7 +51,7 @@
                 删除
               </el-button>
             </el-col>
-            <el-col style="font-size: 8px;color: #777777;padding-left: 0px;" :span="24">
+            <el-col style="font-size: 12px;color: #777777;padding-left: 0px;" :span="24">
               {{ roleList.find(r => r?.id === activeRoleId)?.description }}
             </el-col>
           </el-col>
@@ -500,6 +500,11 @@ const handleOrgSelectSubmit = (p: OrgSelectedData) => {
 
 .red {
   color: #F56C6C;
+}
+
+.button-add{
+  height: 40px;
+  width: 80px;
 }
 
 .table-td-thumb {

@@ -166,6 +166,16 @@ const rentablePagination = ref({
   total: 0,
 });
 
+// Docker镜像相关
+const dockerImages = ref<DockerImage[]>([]);
+const loading = ref(false);
+const searchKeyword = ref("");
+const pagination = ref({
+  currentPage: 1,
+  pageSize: 100,
+  total: 0,
+});
+
 // 添加处理文件选择的方法
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -217,7 +227,6 @@ const fetchDockerImages = async () => {
       size: pagination.value.pageSize,
       keyword: searchKeyword.value || undefined
     };
-
     const response = await getDockerList(params);
     const data = response.data.data || response.data;
 
@@ -292,9 +301,9 @@ const handleRentableCurrentChange = (val: number) => {
   fetchRentableDevices();
 };
 
-// 页面加载时获取初始数据
 onMounted(() => {
   fetchRentableDevices();
+  fetchDockerImages();
 });
 </script>
 
