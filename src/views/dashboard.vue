@@ -7,7 +7,7 @@
             <el-avatar :size="120" :src="userinfo.avatar" />
             <div class="user-info-cont">
               <div class="user-info-name">{{ userinfo.username }}</div>
-              <div>hello world</div>
+              <div>欢迎</div>
             </div>
           </div>
           <div class="user-info-list">
@@ -26,7 +26,7 @@
         <el-card shadow="hover" style="height: 252px">
           <template #header>
             <div class="clearfix">
-              <span>GPU处理器数量</span>
+              <span>GPU处理器数量占比</span>
             </div>
           </template>
           > 16
@@ -96,7 +96,7 @@
         <el-card shadow="hover" style="height: 403px">
           <template #header>
             <div class="clearfix">
-              <span>操作日志</span>
+              <span>最新操作日志</span>
               <el-button
                 style="float: right; padding: 3px 0"
                 text
@@ -327,7 +327,7 @@ const fetchGpuStats = async () => {
 let logList = ref([])
 const fetchLogs = async () => {
   try {
-    const response = await getLogList({ page: 1, size: 6 })
+    const response = await getLogList({ page: 1, size: 4 })
     const logs = response.data.list || []
     console.log('logs',logs)
     // 解析 eventBody 字段并转换为表格显示格式

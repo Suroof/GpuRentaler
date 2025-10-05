@@ -52,10 +52,21 @@
             {{ formatDate(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="210" fixed="right">
           <template #default="scope">
-            <el-button size="small" type="primary" @click="handleUse(scope.row)">
+            <el-button
+              size="small"
+              type="primary"
+              @click="handleUse(scope.row)"
+            >
               使用
+            </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDelete(scope.row)"
+            >
+              删除
             </el-button>
             <el-button size="small" @click="handleView(scope.row)">
               查看
@@ -122,6 +133,7 @@ import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Refresh } from "@element-plus/icons-vue";
 import { getDockerList } from "../api/docker";
+import { deleteDocker } from "../api/storage";
 
 // 定义Docker镜像数据类型
 interface DockerImage {
@@ -146,7 +158,7 @@ const currentImage = ref<DockerImage>({
   tag: "",
   size: 0,
   createdAt: "",
-  description: ""
+  description: "",
 });
 
 // 分页相关
@@ -185,7 +197,7 @@ const fetchDockerImages = async () => {
     const params = {
       page: pagination.value.currentPage,
       size: pagination.value.pageSize,
-      keyword: searchKeyword.value || undefined
+      keyword: searchKeyword.value || undefined,
     };
 
     const response = await getDockerList(params);
@@ -230,13 +242,41 @@ const handleUse = (row: DockerImage) => {
       cancelButtonText: "取消",
       type: "info",
     }
-  ).then(() => {
-    // 这里可以添加使用镜像的具体逻辑
-    ElMessage.success(`已选择使用镜像: ${row.name}:${row.tag}`);
-    detailDialogVisible.value = false;
-  }).catch(() => {
-    // 用户取消操作
-  });
+  )
+    .then(() => {
+      // 这里可以添加使用镜像的具体逻辑
+      ElMessage.success(`已选择使用镜像: ${row.name}:${row.tag}`);
+      detailDialogVisible.value = false;
+    })
+    .catch(() => {
+      // 用户取消操作
+    });
+};
+
+const handleDelete = (row: DockerImage) => {
+  ElMessageBox.confirm(
+    `确定要删除镜像 "${row.name}:${row.tag}" 吗？此操作不可恢复！`,
+    "确认删除",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }
+  )
+    .then(async () => {
+      try {
+        ElMessage.warning("暂不支持删除Docker镜像功能");
+        await deleteDocker(row.key);
+        ElMessage.success("删除成功");
+        fetchDockerImages();
+      } catch (error) {
+        ElMessage.error("删除失败");
+        console.error("删除镜像失败:", error);
+      }
+    })
+    .catch(() => {
+      // 用户取消操作
+    });
 };
 
 // 分页相关方法

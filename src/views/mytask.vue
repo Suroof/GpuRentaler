@@ -115,7 +115,29 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="logDialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="exportTaskLog">导出日志</el-button>
+          <el-button type="primary" @click="showExportDialog">导出日志</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 导出日志对话框 -->
+    <el-dialog
+      v-model="exportDialogVisible"
+      title="导出日志"
+      width="400px"
+    >
+      <el-form>
+        <el-form-item label="导出路径">
+          <el-input
+            v-model="exportPath"
+            placeholder="请输入导出路径"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="exportDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="exportTaskLog">确认导出</el-button>
         </span>
       </template>
     </el-dialog>
@@ -148,6 +170,9 @@ const tasksLoading = ref(false);
 const logDialogVisible = ref(false);
 const taskLog = ref("");
 const currentTaskId = ref<number | null>(null);
+
+const exportDialogVisible = ref(false);
+const exportPath = ref("taskLog.txt");
 
 const taskFilters = ref({
   keyword: "",
@@ -220,6 +245,12 @@ const fetchMyTaskList = async () => {
   }
 };
 
+// 显示导出对话框
+const showExportDialog = () => {
+  exportDialogVisible.value = true;
+  exportPath.value = "taskLog.txt"; // 设置默认路径
+};
+
 // 查看任务日志
 const viewTaskLog = async (row: Task) => {
   try {
@@ -274,19 +305,25 @@ const exportTaskLog = async () => {
     return;
   }
 
+  if (!exportPath.value) {
+    ElMessage.warning("请输入导出路径");
+    return;
+  }
+
   try {
     const params = {
       taskId: currentTaskId.value,
+      path: exportPath.value,
     };
 
     await exportTask(params);
     ElMessage.success("日志导出成功");
+    exportDialogVisible.value = false;
   } catch (error) {
     ElMessage.error("日志导出失败");
     console.error("日志导出失败:", error);
   }
 };
-
 // 处理日志对话框关闭
 const handleLogDialogClose = () => {
   logDialogVisible.value = false;

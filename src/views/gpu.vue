@@ -199,10 +199,9 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="deviceForm.status">
-            <el-option label="可用" value="AVAILABLE" />
-            <el-option label="已租用" value="LEASED" />
-            <el-option label="维护中" value="MAINTENANCE" />
-            <el-option label="故障" value="FAULT" />
+            <el-option label="可用" value="ONLINE" />
+            <el-option label="已租用" value="OFFLINE" />
+            <el-option label="未知" value="UNKNOWN" />
           </el-select>
         </el-form-item>
         <el-form-item label="可租用" prop="isRentable">

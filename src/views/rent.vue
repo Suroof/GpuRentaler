@@ -76,24 +76,23 @@
             <template #append>小时</template>
           </el-input-number>
         </el-form-item>
-        <el-form-item label="上传配置文件">
-          <input
-            ref="fileInputRef"
-            type="file"
-            accept=".tar,.tar.gz,.tgz"
-            @change="handleFileChange"
+        <el-form-item label="选择Docker镜像">
+          <el-select
+            v-model="leaseForm.dockerImageId"
+            placeholder="请选择Docker镜像"
             style="width: 100%"
-          />
-          <div v-if="leaseFile" class="file-info">
-            <span>已选择: {{ leaseFile.name }}</span>
-            <el-button
-              type="danger"
-              size="small"
-              @click="clearFileSelection"
-              style="margin-left: 10px"
-            >
-              清除
-            </el-button>
+            filterable
+            clearable
+          >
+            <el-option
+              v-for="image in dockerImages"
+              :key="image.id"
+              :label="`${image.name}:${image.tag}`"
+              :value="image.id"
+            />
+          </el-select>
+          <div style="margin-top: 10px;">
+            <el-button size="small" @click="fetchDockerImages">刷新镜像列表</el-button>
           </div>
         </el-form-item>
       </el-form>
@@ -119,6 +118,7 @@ import { ref, onMounted } from "vue";
 import { ElMessage, ElForm } from "element-plus";
 import { getRentableGpuDevices, leaseGpuDevice } from "../api/gpu";
 import { Table, Button } from 'ant-design-vue';
+import { getDockerList } from "../api/docker";
 
 // 定义数据类型
 interface GpuDevice {
@@ -136,7 +136,14 @@ interface GpuDevice {
   totalRevenue: string;
 }
 
-// 响应式变量
+interface DockerImage {
+  id: number;
+  name: string;
+  tag: string;
+  size: number;
+  createdAt: string;
+}
+
 const rentableDevices = ref<GpuDevice[]>([]);
 const rentableLoading = ref(false);
 const leaseDeviceDialogVisible = ref(false);
@@ -201,6 +208,29 @@ const fetchRentableDevices = async () => {
   }
 };
 
+// 获取Docker镜像列表
+const fetchDockerImages = async () => {
+  loading.value = true;
+  try {
+    const params = {
+      page: pagination.value.currentPage,
+      size: pagination.value.pageSize,
+      keyword: searchKeyword.value || undefined
+    };
+
+    const response = await getDockerList(params);
+    const data = response.data.data || response.data;
+
+    dockerImages.value = data.list || [];
+    pagination.value.total = data.total || dockerImages.value.length;
+  } catch (error) {
+    ElMessage.error("获取Docker镜像列表失败");
+    console.error("获取Docker镜像列表失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
 // 处理租用设备
 const handleLeaseDevice = (row: GpuDevice) => {
   leaseForm.value = {
@@ -221,12 +251,11 @@ const confirmLeaseDevice = async () => {
     // 准备数据
     const data = {
       duration: leaseForm.value.duration,
+      dockerImageId: leaseForm.value.dockerImageId
     };
 
-    // 调用租用方法，传递文件和数据
     await leaseGpuDevice(
       leaseForm.value.deviceId,
-      leaseFile.value || undefined,
       data
     );
     ElMessage.success("设备租用成功");

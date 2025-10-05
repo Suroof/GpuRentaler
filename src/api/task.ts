@@ -32,10 +32,10 @@ export function finishTask(params: any) {
   });
 }
 
-export function exportTask(params: any) {
+export function exportTask(data: any) {
   return request({
     url: `${BASE_URI}/task/data/export`,
     method: "post",
-    params,
+    data,
   });
 }

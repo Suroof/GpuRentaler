@@ -65,3 +65,9 @@ export function upload(data: { storageId?: string, files: any }) {
   });
 }
 
+export function deleteDocker(id: number) {
+  return request({
+    url: `${BASE_URI}/storage/files/${id}`,
+    method: 'delete'
+  });
+}
