@@ -72,7 +72,7 @@
                   >查看日志</el-button
                 >
                 <el-button size="small" @click="showExportDialog(row)"
-                  >导出日志</el-button
+                  >导出数据</el-button
                 >
                 <el-button
                   v-if="row.status === 'RUNNING'"
@@ -132,7 +132,6 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="logDialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="exportTaskLog">导出日志</el-button>
         </span>
       </template>
     </el-dialog>
@@ -350,7 +349,21 @@ const exportTaskLog = async () => {
       taskId: currentTaskId.value,
       path: exportPath.value,
     };
-    await exportTask(params);
+
+    const response = await exportTask(params);
+
+    // 创建下载链接并触发下载
+    const blob = new Blob([response.data], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const filename = exportPath.value.split('/').pop() || 'export.zip';
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
     ElMessage.success("日志导出成功");
     exportDialogVisible.value = false;
   } catch (error) {
