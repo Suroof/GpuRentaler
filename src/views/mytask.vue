@@ -66,10 +66,13 @@
                 {{ row.actualDurationHours }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="150" fixed="right">
+            <el-table-column label="操作" width="180" fixed="right">
               <template #default="{ row }">
                 <el-button size="small" @click="viewTaskLog(row)"
                   >查看日志</el-button
+                >
+                <el-button size="small" @click="showExportDialog(row)"
+                  >导出日志</el-button
                 >
                 <el-button
                   v-if="row.status === 'RUNNING'"
@@ -105,6 +108,20 @@
       width="60%"
       :before-close="handleLogDialogClose"
     >
+      <div class="log-header">
+        <el-input-number
+          v-model="logNum"
+          :min="1"
+          :max="100"
+          :step="1"
+          style="width: 120px; margin-right: 10px"
+          @change="fetchTaskLog"
+        >
+          <template #append>条</template>
+        </el-input-number>
+        <el-button type="primary" @click="fetchTaskLog">刷新</el-button>
+      </div>
+
       <el-input
         v-model="taskLog"
         type="textarea"
@@ -115,7 +132,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="logDialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="showExportDialog">导出日志</el-button>
+          <el-button type="primary" @click="exportTaskLog">导出日志</el-button>
         </span>
       </template>
     </el-dialog>
@@ -172,7 +189,7 @@ const taskLog = ref("");
 const currentTaskId = ref<number | null>(null);
 
 const exportDialogVisible = ref(false);
-const exportPath = ref("taskLog.txt");
+const exportPath = ref("/workspace");
 
 const taskFilters = ref({
   keyword: "",
@@ -184,6 +201,8 @@ const taskPagination = ref({
   pageSize: 10,
   total: 0,
 });
+
+const logNum = ref(10);
 
 // 格式化日期时间
 const formatDateTime = (dateTime: string) => {
@@ -244,13 +263,12 @@ const fetchMyTaskList = async () => {
     tasksLoading.value = false;
   }
 };
-
 // 显示导出对话框
-const showExportDialog = () => {
+const showExportDialog = (row: Task) => {
+  currentTaskId.value = row.id; // 设置当前任务ID
   exportDialogVisible.value = true;
-  exportPath.value = "taskLog.txt"; // 设置默认路径
+  exportPath.value = "/workspace"; // 设置默认路径
 };
-
 // 查看任务日志
 const viewTaskLog = async (row: Task) => {
   try {
@@ -260,9 +278,8 @@ const viewTaskLog = async (row: Task) => {
 
     const params = {
       taskId: row.id,
-      logNum: 10
+      logNum: logNum.value
     };
-    console.log("params:", params);
     const response = await getTaskLog(params);
     taskLog.value = response.data || "暂无日志";
   } catch (error) {
@@ -272,6 +289,24 @@ const viewTaskLog = async (row: Task) => {
   }
 };
 
+// 获取任务日志
+const fetchTaskLog = async () => {
+  if (!currentTaskId.value) return;
+
+  try {
+    const params = {
+      taskId: currentTaskId.value,
+      logNum: logNum.value
+    };
+
+    const response = await getTaskLog(params);
+    taskLog.value = response.data || "暂无日志";
+  } catch (error) {
+    ElMessage.error("获取任务日志失败");
+    console.error("获取任务日志失败:", error);
+    taskLog.value = "获取日志失败";
+  }
+};
 // 结束任务
 const finishTaskHandler = (row: Task) => {
   ElMessageBox.confirm(`确定要结束任务 ${row.name} 吗？`, "确认结束任务", {
@@ -315,7 +350,6 @@ const exportTaskLog = async () => {
       taskId: currentTaskId.value,
       path: exportPath.value,
     };
-
     await exportTask(params);
     ElMessage.success("日志导出成功");
     exportDialogVisible.value = false;
@@ -324,6 +358,7 @@ const exportTaskLog = async () => {
     console.error("日志导出失败:", error);
   }
 };
+
 // 处理日志对话框关闭
 const handleLogDialogClose = () => {
   logDialogVisible.value = false;
@@ -389,5 +424,14 @@ onMounted(() => {
 
 .dialog-footer {
   text-align: right;
+}
+
+.log-header {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  align-content: center;
+  gap: 25px;
+  margin-bottom: 10px;
 }
 </style>

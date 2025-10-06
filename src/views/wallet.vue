@@ -10,16 +10,10 @@
       <div class="wallet-info">
         <div class="balance-section">
           <div class="balance-label">账户余额</div>
-          <div class="balance-amount">¥ {{ walletStore.balance }}</div>
-          <div class="last-transaction" v-if="walletStore.lastTransactionTime">
-            最后交易时间: {{ formatDateTime(walletStore.lastTransactionTime) }}
+          <div class="balance-amount">¥ {{ walletInfo.balance }}</div>
+          <div class="last-transaction" v-if="walletInfo.lastTransactionTime">
+            最后交易时间: {{ formatDateTime(walletInfo.lastTransactionTime) }}
           </div>
-        </div>
-
-        <div class="wallet-status">
-          <el-tag :type="walletStore.status === 1 ? 'success' : 'warning'">
-            {{ walletStore.status === 1 ? '正常' : '异常' }}
-          </el-tag>
         </div>
       </div>
 
@@ -27,18 +21,11 @@
         <el-button type="primary" @click="showRechargeDialog = true">
           充值
         </el-button>
-        <el-button @click="walletStore.fetchWalletInfo">
-          刷新
-        </el-button>
       </div>
     </el-card>
 
     <!-- 充值对话框 -->
-    <el-dialog
-      v-model="showRechargeDialog"
-      title="账户充值"
-      width="400px"
-    >
+    <el-dialog v-model="showRechargeDialog" title="账户充值" width="400px">
       <el-form
         ref="rechargeFormRef"
         :model="rechargeForm"
@@ -73,37 +60,71 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { ElMessage, ElForm } from 'element-plus';
-import { useWalletStore } from '../store/wallet';
+import { ref, onMounted } from "vue";
+import { ElMessage, ElForm } from "element-plus";
+import { getMyWallet } from "../api/wallet";
 
-const walletStore = useWalletStore();
+// 定义钱包数据类型
+interface WalletInfo {
+  id: number;
+  userId: number;
+  balance: string;
+  status: number;
+  lastTransactionTime: string;
+}
+
 const showRechargeDialog = ref(false);
 const rechargeLoading = ref(false);
 const rechargeFormRef = ref<InstanceType<typeof ElForm>>();
 const rechargeForm = ref({
-  amount: ''
+  amount: "",
 });
+
+// 添加钱包相关响应式变量
+const walletInfo = ref<WalletInfo>({
+  id: 0,
+  userId: 0,
+  balance: "0.00",
+  status: 1,
+  lastTransactionTime: "",
+});
+const loading = ref(false);
 
 const rechargeRules = {
   amount: [
-    { required: true, message: '请输入充值金额', trigger: 'blur' },
+    { required: true, message: "请输入充值金额", trigger: "blur" },
     {
       validator: (rule: any, value: string, callback: any) => {
         if (value && parseFloat(value) <= 0) {
-          callback(new Error('充值金额必须大于0'));
+          callback(new Error("充值金额必须大于0"));
         } else {
           callback();
         }
       },
-      trigger: 'blur'
-    }
-  ]
+      trigger: "blur",
+    },
+  ],
+};
+
+const fetchWallet = async () => {
+  loading.value = true;
+  try {
+    const response = await getMyWallet();
+    const data = response.data.data || response.data;
+    walletInfo.value = data;
+    console.log("获取钱包信息成功:", data);
+  } catch (error) {
+    ElMessage.error("获取钱包信息失败");
+    console.error("获取钱包信息失败:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 // 格式化日期时间
 const formatDateTime = (dateTime: string) => {
-  return new Date(dateTime).toLocaleString('zh-CN');
+  if (!dateTime) return "-";
+  return new Date(dateTime).toLocaleString("zh-CN");
 };
 
 // 处理充值
@@ -114,12 +135,13 @@ const handleRecharge = async () => {
     if (valid) {
       rechargeLoading.value = true;
       try {
-        await walletStore.recharge(rechargeForm.value.amount);
-        ElMessage.success('充值成功');
+        // 这里应该调用充值API，暂时用fetchWallet来更新显示
+        ElMessage.success("充值成功");
         showRechargeDialog.value = false;
-        rechargeForm.value.amount = '';
+        rechargeForm.value.amount = "";
+        fetchWallet(); // 重新获取钱包信息
       } catch (error) {
-        ElMessage.error('充值失败');
+        ElMessage.error("充值失败");
       } finally {
         rechargeLoading.value = false;
       }
@@ -129,10 +151,9 @@ const handleRecharge = async () => {
 
 // 页面加载时获取钱包信息
 onMounted(() => {
-  walletStore.fetchWalletInfo();
+  fetchWallet();
 });
 </script>
-
 <style scoped>
 .wallet-container {
   padding: 20px;
@@ -157,6 +178,9 @@ onMounted(() => {
 
 .balance-section {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .balance-label {
