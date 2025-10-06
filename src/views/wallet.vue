@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElMessage, ElForm } from "element-plus";
-import { getMyWallet } from "../api/wallet";
+import { getMyWallet, sandboxRecharge  } from "../api/wallet";
 
 // 定义钱包数据类型
 interface WalletInfo {
@@ -127,7 +127,6 @@ const formatDateTime = (dateTime: string) => {
   return new Date(dateTime).toLocaleString("zh-CN");
 };
 
-// 处理充值
 const handleRecharge = async () => {
   if (!rechargeFormRef.value) return;
 
@@ -135,7 +134,8 @@ const handleRecharge = async () => {
     if (valid) {
       rechargeLoading.value = true;
       try {
-        // 这里应该调用充值API，暂时用fetchWallet来更新显示
+        // 调用充值API
+        await sandboxRecharge({ amount: rechargeForm.value.amount });
         ElMessage.success("充值成功");
         showRechargeDialog.value = false;
         rechargeForm.value.amount = "";
