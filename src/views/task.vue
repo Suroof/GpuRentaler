@@ -70,6 +70,24 @@
             {{ row.actualDurationHours }}
           </template>
         </el-table-column>
+        <el-table-column
+          prop="hourlyRate"
+          label="每小时花费"
+          width="120"
+        >
+          <template #default="{ row }">
+            {{ row.hourlyRate }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="hourlyRate"
+          label="总花费"
+          width="120"
+        >
+          <template #default="{ row }">
+            {{ row.totalCost }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="viewTaskLog(row)"
