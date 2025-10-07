@@ -87,7 +87,7 @@
             <el-option
               v-for="image in dockerImages"
               :key="image.id"
-              :label="`${image.name}:${image.tag}`"
+              :label="`${image.name}`"
               :value="image.id"
             />
           </el-select>
@@ -251,7 +251,6 @@ const handleLeaseDevice = (row: GpuDevice) => {
   leaseDeviceDialogVisible.value = true;
 };
 
-// 确认租用设备
 const confirmLeaseDevice = async () => {
   if (!leaseFormRef.value) return;
 
@@ -263,10 +262,18 @@ const confirmLeaseDevice = async () => {
       dockerImageId: leaseForm.value.dockerImageId
     };
 
+    // 获取选中镜像的key（这里需要从dockerImages中查找）
+    const selectedImage = dockerImages.value.find(image => image.id === leaseForm.value.dockerImageId);
+    const imageKey = selectedImage ? selectedImage.key : '';
+    console.log('imageKey:', imageKey);
+
     await leaseGpuDevice(
       leaseForm.value.deviceId,
+      imageKey, // 使用镜像的key
+      leaseFile.value, // 文件
       data
     );
+
     ElMessage.success("设备租用成功");
     leaseDeviceDialogVisible.value = false;
 

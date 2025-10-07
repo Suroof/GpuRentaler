@@ -20,7 +20,7 @@ export function getRentableGpuDevices(params: any) {
 }
 
 // 租用GPU设备
-export function leaseGpuDevice(deviceId: string, file?: File, data?: any) {
+export function leaseGpuDevice(deviceId: string, key: string, file?: File, data?: any) {
   // 如果有文件，使用 FormData 格式
   if (file) {
       const formData = new FormData();
@@ -39,6 +39,9 @@ export function leaseGpuDevice(deviceId: string, file?: File, data?: any) {
           data: formData,
           headers: {
               'Content-Type': 'multipart/form-data'
+          },
+          params: {
+              key
           }
       });
   } else {
@@ -46,11 +49,13 @@ export function leaseGpuDevice(deviceId: string, file?: File, data?: any) {
       return request({
           url: `${BASE_URI}/gpu/${deviceId}/lease`,
           method: 'post',
-          data
+          data,
+          params: {
+              key
+          }
       });
   }
 }
-
 // 归还GPU设备
 export function returnGpuDevice(deviceId: string) {
     return request({
