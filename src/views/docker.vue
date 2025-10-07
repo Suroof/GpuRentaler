@@ -246,11 +246,6 @@ const handleRemove: UploadProps["onRemove"] = (files, fileList) => {
 };
 
 const submitUpload = async () => {
-  if (!uploadFileList.value.length) {
-    ElMessage.warning("请选择要上传的文件");
-    return;
-  }
-
   const files = uploadFileList.value[0].raw;
   if (!files) {
     ElMessage.error("未找到有效的文件");
@@ -258,15 +253,11 @@ const submitUpload = async () => {
   }
 
   try{
-    const formData = new FormData();
-    formData.append("files", files);
-
-    await uploadDocker(formData);
+    await uploadDocker({ files });
 
     ElMessage.success("上传镜像成功");
     uploadDialogVisible.value = false;
 
-    // 重新加载列表
     fetchDockerImages();
   } catch (error) {
     ElMessage.error("上传镜像失败: " + (error.message || "未知错误"));

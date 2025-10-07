@@ -4,7 +4,7 @@ import router from "../router";
 
 const service: AxiosInstance = axios.create({
     baseURL: '/admin3',
-    timeout: 5000
+    timeout: 500000
 });
 
 service.interceptors.request.use(

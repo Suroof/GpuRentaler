@@ -9,11 +9,12 @@ export function getDockerList(params: any) {
     });
 }
 
-export function uploadDocker(data: any) {
+export function uploadDocker(data: { files: any }) {
   return request({
       url: `${BASE_URI}/docker/image/upload`,
+      headers: {'Content-Type': 'multipart/form-data'},
       method: 'post',
-      data
+      data,
   });
 }
 
