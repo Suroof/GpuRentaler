@@ -35,7 +35,7 @@
             style="width: 100%"
           >
             <el-table-column prop="id" label="任务ID" width="100" />
-            <el-table-column prop="gpuDeviceId" label="GPU设备ID" width="150" >
+            <el-table-column prop="gpuDeviceId" label="GPU设备ID" width="150">
               <template #default="{ row }">
                 {{ row.deviceId }}
               </template>
@@ -66,13 +66,16 @@
                 {{ row.actualDurationHours }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="180" fixed="right">
+            <el-table-column label="操作" width="338" fixed="right">
               <template #default="{ row }">
                 <el-button size="small" @click="viewTaskLog(row)"
                   >查看日志</el-button
                 >
                 <el-button size="small" @click="showExportDialog(row)"
                   >导出数据</el-button
+                >
+                <el-button size="small" @click="showFinishTaskDialog(row)"
+                  >完成任务</el-button
                 >
                 <el-button
                   v-if="row.status === 'RUNNING'"
@@ -137,23 +140,26 @@
     </el-dialog>
 
     <!-- 导出日志对话框 -->
-    <el-dialog
-      v-model="exportDialogVisible"
-      title="导出日志"
-      width="400px"
-    >
+    <el-dialog v-model="exportDialogVisible" title="导出数据" width="400px">
       <el-form>
         <el-form-item label="导出路径">
-          <el-input
-            v-model="exportPath"
-            placeholder="请输入导出路径"
-          />
+          <el-input v-model="exportPath" placeholder="请输入导出路径" />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="exportDialogVisible = false">取消</el-button>
           <el-button type="primary" @click="exportTaskLog">确认导出</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 完成任务对话框 -->
+    <el-dialog v-model="finishDialogVisible" title="完成任务" width="400px">
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="finishDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="finishTaskDialog">确认</el-button>
         </span>
       </template>
     </el-dialog>
@@ -189,6 +195,8 @@ const currentTaskId = ref<number | null>(null);
 
 const exportDialogVisible = ref(false);
 const exportPath = ref("/workspace");
+
+const finishDialogVisible = ref(false);
 
 const taskFilters = ref({
   keyword: "",
@@ -277,7 +285,7 @@ const viewTaskLog = async (row: Task) => {
 
     const params = {
       taskId: row.id,
-      logNum: logNum.value
+      logNum: logNum.value,
     };
     const response = await getTaskLog(params);
     taskLog.value = response.data || "暂无日志";
@@ -295,7 +303,7 @@ const fetchTaskLog = async () => {
   try {
     const params = {
       taskId: currentTaskId.value,
-      logNum: logNum.value
+      logNum: logNum.value,
     };
 
     const response = await getTaskLog(params);
@@ -353,12 +361,14 @@ const exportTaskLog = async () => {
     const response = await exportTask(params);
 
     // 创建下载链接并触发下载
-    const blob = new Blob([response.data], { type: 'application/octet-stream' });
+    const blob = new Blob([response.data], {
+      type: "application/octet-stream",
+    });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    const filename = exportPath.value.split('/').pop() || 'export.zip';
-    link.setAttribute('download', filename);
+    const filename = exportPath.value.split("/").pop() || "export.zip";
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -369,6 +379,24 @@ const exportTaskLog = async () => {
   } catch (error) {
     ElMessage.error("日志导出失败");
     console.error("日志导出失败:", error);
+  }
+};
+
+const showFinishTaskDialog  = async (row: Task) => {
+  currentTaskId.value = row.id;
+  finishDialogVisible.value = true;
+  try {
+    const params = {
+      taskId: currentTaskId.value,
+    };
+
+    await finishTask(params);
+    ElMessage.success("任务结束成功");
+    finishDialogVisible.value = false;
+    fetchMyTaskList();
+  } catch (error) {
+    ElMessage.error("任务结束失败");
+    console.error("任务结束失败:", error);
   }
 };
 

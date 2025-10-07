@@ -5,10 +5,13 @@
         <div class="card-header">
           <span>Docker镜像管理</span>
           <div class="header-actions">
+            <el-button type="primary" @click="openUploadDialog">
+              上传镜像
+            </el-button>
             <el-input
               v-model="searchKeyword"
               placeholder="搜索镜像名称"
-              style="width: 200px; margin-right: 10px"
+              style="width: 200px; margin-right: 10px; margin-left: 10px"
               clearable
               @clear="handleSearch"
               @keyup.enter="handleSearch"
@@ -125,15 +128,57 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 上传镜像对话框 -->
+    <el-dialog
+      v-model="uploadDialogVisible"
+      title="上传Docker镜像"
+      width="500px"
+    >
+      <el-form ref="uploadFormRef" :model="uploadForm" label-width="120px">
+        <el-form-item label="选择文件">
+          <el-upload
+            ref="uploadRef"
+            action=""
+            :auto-upload="false"
+            :on-change="handleChange"
+            :on-remove="handleRemove"
+            accept=".tar,.tar.gz,.tgz"
+            :limit="1"
+            :file-list="uploadFileList"
+            drag
+          >
+            <el-icon><Upload /></el-icon>
+            <div class="el-upload__text">将文件拖到此处，或点击上传</div>
+            <div class="el-upload__tip" slot="tip">
+              只支持.tar、.tar.gz、.tgz格式的文件
+            </div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="uploadDialogVisible = false">取消</el-button>
+          <el-button
+            type="primary"
+            @click="submitUpload"
+            :disabled="!uploadFileList.length"
+          >
+            确认上传
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Search, Refresh } from "@element-plus/icons-vue";
-import { getDockerList } from "../api/docker";
-import { deleteDocker } from "../api/storage";
+import { Search, Refresh, Upload } from "@element-plus/icons-vue";
+import { getDockerList, uploadDocker } from "../api/docker";
+import type { UploadInstance, UploadProps, UploadUserFile } from "element-plus";
 
 // 定义Docker镜像数据类型
 interface DockerImage {
@@ -142,7 +187,10 @@ interface DockerImage {
   tag: string;
   size: number; // 以字节为单位
   createdAt: string;
+  createTime: string;
+  createUser: string;
   description?: string;
+  key?: string;
 }
 
 // 数据响应式变量
@@ -150,6 +198,12 @@ const dockerImages = ref<DockerImage[]>([]);
 const loading = ref(false);
 const detailDialogVisible = ref(false);
 const searchKeyword = ref("");
+const uploadDialogVisible = ref(false);
+
+// 上传相关的引用
+const uploadRef = ref<UploadInstance>();
+const uploadFileList = ref<UploadUserFile[]>([]);
+const uploadFormRef = ref();
 
 // 当前选中的镜像
 const currentImage = ref<DockerImage>({
@@ -158,7 +212,10 @@ const currentImage = ref<DockerImage>({
   tag: "",
   size: 0,
   createdAt: "",
+  createTime: "",
+  createUser: "",
   description: "",
+  key: "",
 });
 
 // 分页相关
@@ -167,6 +224,55 @@ const pagination = ref({
   pageSize: 10,
   total: 0,
 });
+
+// 上传Docker镜像按钮点击事件
+const openUploadDialog = () => {
+  uploadDialogVisible.value = true;
+  // 清空之前选择的文件
+  uploadFileList.value = [];
+  if (uploadRef.value) {
+    uploadRef.value.clearFiles();
+  }
+};
+
+// 文件选择变化处理
+const handleChange: UploadProps["onChange"] = (files, fileList) => {
+  uploadFileList.value = fileList;
+};
+
+// 文件移除处理
+const handleRemove: UploadProps["onRemove"] = (files, fileList) => {
+  uploadFileList.value = fileList;
+};
+
+const submitUpload = async () => {
+  if (!uploadFileList.value.length) {
+    ElMessage.warning("请选择要上传的文件");
+    return;
+  }
+
+  const files = uploadFileList.value[0].raw;
+  if (!files) {
+    ElMessage.error("未找到有效的文件");
+    return;
+  }
+
+  try{
+    const formData = new FormData();
+    formData.append("files", files);
+
+    await uploadDocker(formData);
+
+    ElMessage.success("上传镜像成功");
+    uploadDialogVisible.value = false;
+
+    // 重新加载列表
+    fetchDockerImages();
+  } catch (error) {
+    ElMessage.error("上传镜像失败: " + (error.message || "未知错误"));
+    console.error("上传镜像失败:", error);
+  }
+};
 
 // 格式化文件大小
 const formatSize = (size: number) => {
@@ -266,7 +372,7 @@ const handleDelete = (row: DockerImage) => {
     .then(async () => {
       try {
         ElMessage.warning("暂不支持删除Docker镜像功能");
-        await deleteDocker(row.key);
+        // await deleteDocker(row.key);
         ElMessage.success("删除成功");
         fetchDockerImages();
       } catch (error) {

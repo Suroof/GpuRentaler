@@ -12,9 +12,8 @@
               clearable
               @change="fetchTaskList"
             >
-              <el-option label="运行中" value="RUNNING" />
-              <el-option label="已完成" value="FINISHED" />
-              <el-option label="已取消" value="CANCELLED" />
+              <el-option label="运行中" value="active" />
+              <el-option label="已完成" value="completed" />
             </el-select>
             <el-button type="primary" @click="fetchTaskList">刷新</el-button>
           </div>
@@ -70,20 +69,12 @@
             {{ row.actualDurationHours }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="hourlyRate"
-          label="每小时花费"
-          width="120"
-        >
+        <el-table-column prop="hourlyRate" label="每小时花费" width="120">
           <template #default="{ row }">
             {{ row.hourlyRate }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="hourlyRate"
-          label="总花费"
-          width="120"
-        >
+        <el-table-column prop="hourlyRate" label="总花费" width="120">
           <template #default="{ row }">
             {{ row.totalCost }}
           </template>
@@ -95,6 +86,9 @@
             >
             <el-button size="small" @click="showExportDialog(row)"
               >导出数据</el-button
+            >
+            <el-button size="small" @click="showFinishTaskDialog(row)"
+              >完成任务</el-button
             >
             <el-button
               v-if="row.status === 'RUNNING'"
@@ -157,7 +151,7 @@
     </el-dialog>
 
     <!-- 导出日志对话框 -->
-    <el-dialog v-model="exportDialogVisible" title="导出日志" width="400px">
+    <el-dialog v-model="exportDialogVisible" title="导出数据" width="400px">
       <el-form>
         <el-form-item label="导出路径">
           <el-input v-model="exportPath" placeholder="请输入导出路径" />
@@ -167,6 +161,16 @@
         <span class="dialog-footer">
           <el-button @click="exportDialogVisible = false">取消</el-button>
           <el-button type="primary" @click="exportTaskLog">确认导出</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 完成任务对话框 -->
+    <el-dialog v-model="finishDialogVisible" title="完成任务" width="400px">
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="finishDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="finishTaskDialog">确认</el-button>
         </span>
       </template>
     </el-dialog>
@@ -205,6 +209,8 @@ const loading = ref(false);
 const logDialogVisible = ref(false);
 const taskLog = ref("");
 const currentTaskId = ref<number | null>(null);
+
+const finishDialogVisible = ref(false);
 
 const filters = ref({
   keyword: "",
@@ -246,8 +252,6 @@ const getTaskStatusText = (status: string) => {
       return "运行中";
     case "FINISHED":
       return "已完成";
-    case "CANCELLED":
-      return "已取消";
     default:
       return status;
   }
@@ -323,6 +327,26 @@ const fetchTaskLog = async () => {
     taskLog.value = "获取日志失败";
   }
 };
+
+const showFinishTaskDialog  = async (row: Task) => {
+  currentTaskId.value = row.id;
+  finishDialogVisible.value = true;
+  try {
+    const params = {
+      taskId: currentTaskId.value,
+    };
+
+    await finishTask(params);
+    ElMessage.success("任务结束成功");
+    finishDialogVisible.value = false;
+    fetchMyTaskList();
+  } catch (error) {
+    ElMessage.error("任务结束失败");
+    console.error("任务结束失败:", error);
+  }
+};
+
+
 // 结束任务
 const finishTaskHandler = (row: Task) => {
   ElMessageBox.confirm(`确定要结束任务 ${row.name} 吗？`, "确认结束任务", {
@@ -377,12 +401,14 @@ const exportTaskLog = async () => {
     const response = await exportTask(params);
 
     // 创建下载链接并触发下载
-    const blob = new Blob([response.data], { type: 'application/octet-stream' });
+    const blob = new Blob([response.data], {
+      type: "application/octet-stream",
+    });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    const filename = exportPath.value.split('/').pop() || 'export.zip';
-    link.setAttribute('download', filename);
+    const filename = exportPath.value.split("/").pop() || "export.zip";
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

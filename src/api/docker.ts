@@ -9,3 +9,11 @@ export function getDockerList(params: any) {
     });
 }
 
+export function uploadDocker(data: any) {
+  return request({
+      url: `${BASE_URI}/docker/image/upload`,
+      method: 'post',
+      data
+  });
+}
+
